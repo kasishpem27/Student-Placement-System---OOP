@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import OffCampusAdmin.AdminDashboardFrame;
 import dbconnection.DBConnection;
 
 
@@ -257,8 +258,7 @@ public class LoginFrame extends JFrame {
             
             boolean authenticated = authenticateUser(email, new String(pass),role);
             
-            if (authenticated) {
-            	
+            if (role.equals("student")){
 	            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
 	            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	            frame.setSize(1100,700);
@@ -266,14 +266,25 @@ public class LoginFrame extends JFrame {
 	            frame.setVisible(true);
 	            setVisible(false);
 	            
-	            jt_email.setText("");
-	            jp_password.setText("");
-	            }
+		    	} else if (role.equals("Off-Campus Admin")) {
+			            AdminDashboardFrame frame = new AdminDashboardFrame(LoginFrame.this, userId);
+			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			            frame.setSize(1100,650);
+			            frame.setLocationRelativeTo(null);
+			            frame.setVisible(true);
+			            setVisible(false);
+		    	}
+		
+		        
+		        jt_email.setText("");
+		        jp_password.setText("");
+		        }
+            
             
         }
         
         
-    }
+
     
     private boolean authenticateUser(String email, String password, String role) {
         String sql = "SELECT * FROM user WHERE email=? AND role=?; ";
