@@ -2,9 +2,19 @@ package student;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import org.mindrot.jbcrypt.BCrypt;
+
+import dbconnection.DBConnection;
+
 
 public class LoginFrame extends JFrame {
 
@@ -25,6 +35,7 @@ public class LoginFrame extends JFrame {
     private final Color clr_white = Color.WHITE;
 
     private final Color clr_fieldBorder = new Color(200, 200, 200);
+    private int userId;
 
     
     public LoginFrame() {
@@ -45,8 +56,9 @@ public class LoginFrame extends JFrame {
         JPanel jp_welcomeRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         jp_welcomeRow.setBackground(clr_white);
 
-        ImageIcon icon = new ImageIcon("src/images/logo2.png");
-        jl_welcome = new JLabel("CareerConnect", icon, SwingConstants.CENTER);
+        ImageIcon rawLogoIcon = new ImageIcon("src/images/CareerConnect.png");
+        Image scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        jl_welcome = new JLabel("CareerConnect", new ImageIcon(scaledLogoIcon), SwingConstants.CENTER);
         jl_welcome.setForeground(clr_blue);
         jl_welcome.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
@@ -222,39 +234,111 @@ public class LoginFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String email = jt_email.getText().trim();
             char[] pass = jp_password.getPassword();
+       
             String role = (String) jcb_role.getSelectedItem();
 
             if (email.length() == 0 || !email.contains("@")) {
                 JOptionPane.showMessageDialog(null,
-                        "Please enter a valid email address.",
+                        "Please enter a valid email address. (It should contain a @)",
                         "Invalid Field",
                         JOptionPane.ERROR_MESSAGE);
                 jt_email.requestFocus(); // Put typing cursor in that field
-                return;
+                return ;
             }
 
-            if (pass.length == 0) {
+            if (pass.length == 0 || pass.length <= 8) {
                 JOptionPane.showMessageDialog(null,
-                        "Please enter your password.",
+                        "Please enter a valid password. (It should be greater than 8 characters)",
                         "Invalid Field",
                         JOptionPane.ERROR_MESSAGE);
                 jp_password.requestFocus(); // Put typing cursor in that field
                 return;
             }
-
-            JOptionPane.showMessageDialog(null,
-                    "Login OK!\nRole: " + role,
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
             
-            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1100,700);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-            setVisible(false);
+            boolean authenticated = authenticateUser(email, new String(pass),role);
+            
+            if (authenticated) {
+            	
+	            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
+	            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	            frame.setSize(1100,700);
+	            frame.setLocationRelativeTo(null);
+	            frame.setVisible(true);
+	            setVisible(false);
+	            
+	            jt_email.setText("");
+	            jp_password.setText("");
+	            }
             
         }
+        
+        
+    }
+    
+    private boolean authenticateUser(String email, String password, String role) {
+        String sql = "SELECT * FROM user WHERE email=? AND role=?; ";
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) {
+
+	            myStmt.setString(1, email);
+	            myStmt.setString(2,role);
+
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (!result.next()) {
+	            	
+	                JOptionPane.showMessageDialog(null,
+	                        "Incorrect Credentials. Access Denied",
+	                        "Login Failed",
+	                        JOptionPane.ERROR_MESSAGE);
+	                jt_email.setText("");
+	                jp_password.setText("");
+	                return false;
+	            }
+	            
+	            userId = result.getInt("userId");
+	            String storedHash = result.getString("password");
+	            String accountStatus = result.getString("accountStatus");
+	            
+	            boolean passwordMatch = BCrypt.checkpw(password, storedHash);
+	            
+	            if (accountStatus.equals("deactivated")) {
+	                JOptionPane.showMessageDialog(null,
+	                        "Access Denied. Your account is not active",
+	                        "Account Deactivated",
+	                        JOptionPane.ERROR_MESSAGE);
+	                return false;
+	            }
+	            
+	               
+	            if (!passwordMatch ) {
+	            	
+	                JOptionPane.showMessageDialog(null,
+	                        "Incorrect Credentials. Access Denied",
+	                        "Login Failed",
+	                        JOptionPane.ERROR_MESSAGE);
+	                jt_email.setText("");
+	                jp_password.setText("");
+	                return false;
+	        
+	            }
+	            
+            	JOptionPane.showMessageDialog(null,
+                        "Login Successful. Press OK to redirect to Dashboard",
+                        "Login Sucessful",
+                        JOptionPane.INFORMATION_MESSAGE);
+            	                	           	          
+            	
+
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(LoginFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+            return true;
     }
     
 }

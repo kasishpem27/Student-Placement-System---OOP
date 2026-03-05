@@ -1,6 +1,8 @@
-package student;
+package launcher;
 
 import javax.swing.JFrame;
+
+import student.LoginFrame;
 
 public class Launcher {
     

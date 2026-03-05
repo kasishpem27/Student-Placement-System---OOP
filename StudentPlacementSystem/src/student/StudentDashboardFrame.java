@@ -2,9 +2,17 @@ package student;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import dbconnection.DBConnection;
+
 
 public class StudentDashboardFrame extends JFrame {
 
@@ -51,15 +59,20 @@ public class StudentDashboardFrame extends JFrame {
     private JPanel jp_offCampusActionCard;
     
     private LoginFrame login;
+    private String studentName, studentUserName;
+    private int userId, studentId;
+    private int totalApplicationsCount, pendingCount, acceptedCount, rejectedCount;
 
-    public StudentDashboardFrame(LoginFrame login) {
+    public StudentDashboardFrame(LoginFrame login, int userId) {
         super("Student Dashboard");
 
         setLayout(new BorderLayout());
         getContentPane().setBackground(clr_bg);
         setResizable(false);
         this.login = login;
-
+        this.userId = userId;
+        fetchStudentNameAndId();
+        
         // Header Panel
         JPanel jp_header = new JPanel(new BorderLayout());
         jp_header.setBackground(clr_blue);
@@ -67,8 +80,12 @@ public class StudentDashboardFrame extends JFrame {
 
         JPanel jp_headerLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         jp_headerLeft.setBackground(clr_blue);
-
-        jl_headerLogo = new JLabel(new ImageIcon("src/images/logo2.png"));
+        
+        
+        ImageIcon rawLogoIcon = new ImageIcon("src/images/CareerConnect.png");
+        Image scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+        jl_headerLogo = new JLabel(new ImageIcon(scaledLogoIcon));
+        
         jl_headerLogo.setHorizontalAlignment(SwingConstants.LEFT);
 
         jl_headerTitle = new JLabel("CareerConnect — Student Dashboard");
@@ -94,7 +111,7 @@ public class StudentDashboardFrame extends JFrame {
         Image scaledProfileIcon = rawProfileIcon.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         JLabel jl_profileIcon = new JLabel(new ImageIcon(scaledProfileIcon));
 
-        JLabel jl_userInfo = new JLabel("Kasish  ·  STU2024001");
+        JLabel jl_userInfo = new JLabel(studentUserName + " · STU" + studentId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(clr_white);
 
@@ -124,7 +141,7 @@ public class StudentDashboardFrame extends JFrame {
         JPanel jp_welcomeText = new JPanel(new GridLayout(2, 1, 0, 2));
         jp_welcomeText.setBackground(clr_blue);
 
-        JLabel jl_welcomeTitle = new JLabel("Welcome back, Kasish Pem");
+        JLabel jl_welcomeTitle = new JLabel("Welcome back, " + studentName);
         jl_welcomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
         jl_welcomeTitle.setForeground(clr_white);
 
@@ -144,6 +161,8 @@ public class StudentDashboardFrame extends JFrame {
         // Stat Cards
         JPanel jp_statsRow = new JPanel(new GridLayout(1, 4, 14, 0));
         jp_statsRow.setBackground(clr_bg);
+        
+        calculateGridStats();
 
         JPanel jp_totalApplicationsCard = new JPanel(new BorderLayout());
         jp_totalApplicationsCard.setBackground(clr_white);
@@ -158,7 +177,7 @@ public class StudentDashboardFrame extends JFrame {
         jl_totalApplicationsTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_totalApplicationsTitle.setForeground(clr_stats_title);
 
-        jl_totalApplicationsValue = new JLabel("6");
+        jl_totalApplicationsValue = new JLabel(Integer.toString(totalApplicationsCount));
         jl_totalApplicationsValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
         jl_totalApplicationsValue.setForeground(clr_textDark);
 
@@ -178,7 +197,7 @@ public class StudentDashboardFrame extends JFrame {
         jl_pendingApplicationsTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_pendingApplicationsTitle.setForeground(clr_stats_title);
 
-        jl_pendingApplicationsValue = new JLabel("2");
+        jl_pendingApplicationsValue = new JLabel(Integer.toString(pendingCount));
         jl_pendingApplicationsValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
         jl_pendingApplicationsValue.setForeground(clr_textDark);
 
@@ -198,7 +217,7 @@ public class StudentDashboardFrame extends JFrame {
         jl_acceptedApplicationsTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_acceptedApplicationsTitle.setForeground(clr_stats_title);
 
-        jl_acceptedApplicationsValue = new JLabel("1");
+        jl_acceptedApplicationsValue = new JLabel(Integer.toString(acceptedCount));
         jl_acceptedApplicationsValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
         jl_acceptedApplicationsValue.setForeground(clr_textDark);
 
@@ -218,7 +237,7 @@ public class StudentDashboardFrame extends JFrame {
         jl_rejectedApplicationsTitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_rejectedApplicationsTitle.setForeground(clr_stats_title);
 
-        jl_rejectedApplicationsValue = new JLabel("3");
+        jl_rejectedApplicationsValue = new JLabel(Integer.toString(rejectedCount));
         jl_rejectedApplicationsValue.setFont(new Font("Segoe UI", Font.BOLD, 28));
         jl_rejectedApplicationsValue.setForeground(clr_textDark);
 
@@ -406,7 +425,7 @@ public class StudentDashboardFrame extends JFrame {
             }
 
             public void mouseClicked(MouseEvent e) {
-                MyApplicationsFrame frame = new MyApplicationsFrame(StudentDashboardFrame.this);
+                MyApplicationsFrame frame = new MyApplicationsFrame(StudentDashboardFrame.this, studentId);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(1100, 700);
                 frame.setLocationRelativeTo(null);
@@ -442,6 +461,72 @@ public class StudentDashboardFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "My Offers clicked.", "Action", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        
+    }
+    
+
+    
+    private void fetchStudentNameAndId() {
+    	String sql = "SELECT student.fullName,student.studentId, user.username from student, user where student.userId= user.userId and student.userId = ?";
+      
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	            myStmt.setString(1, Integer.toString(userId));
+
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	studentName = result.getString("fullName");
+	            	studentId = result.getInt("studentId");
+	            	studentUserName = result.getString("username");
+	                	                
+	            }
+	            
+	           
+	        } 
+        
+        	catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(StudentDashboardFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+    }
+    
+    private void calculateGridStats() {
+    	String sql = "SELECT COUNT(*) AS total_applications, " +
+                "SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending_applications, " +
+                "SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) AS accepted_applications, " +
+                "SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected_applications " +
+                "FROM application WHERE studentId = ?";
+    	try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	            myStmt.setString(1, Integer.toString(studentId));
+
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	pendingCount =  result.getInt("pending_applications");
+	            	acceptedCount =  result.getInt("accepted_applications");
+	            	rejectedCount =  result.getInt("rejected_applications");
+	            	totalApplicationsCount =  pendingCount + acceptedCount + rejectedCount;
+	                	                
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(StudentDashboardFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
     }
 
 

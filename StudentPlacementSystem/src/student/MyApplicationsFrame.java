@@ -2,11 +2,20 @@ package student;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+
+import dbconnection.DBConnection;
 
 public class MyApplicationsFrame extends JFrame {
 
@@ -22,18 +31,23 @@ public class MyApplicationsFrame extends JFrame {
     private JLabel jl_headerTitle;
     private JLabel jl_profileIcon;
     private JLabel jl_userInfo;
-    private JButton jb_headerLogout;
     private JButton jb_back;
     
     private StudentDashboardFrame dashboard;
+    private String studentUserName;
+    private int studentId;
+    private List<String[]> rows = new ArrayList<>();
 
-    public MyApplicationsFrame(StudentDashboardFrame dashboard) {
+
+    public MyApplicationsFrame(StudentDashboardFrame dashboard, int studentId) {
         super("My Applications");
         this.dashboard = dashboard;
+        this.studentId = studentId;
         setLayout(new BorderLayout());
         getContentPane().setBackground(clr_bg);
         setResizable(false);
-
+        
+        fetchStudentName();
         // Header
         JPanel jp_header = new JPanel(new BorderLayout());
         jp_header.setBackground(clr_blue);
@@ -47,14 +61,6 @@ public class MyApplicationsFrame extends JFrame {
         jl_headerTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
         jp_headerLeft.add(jl_headerTitle);
 
-        jb_headerLogout = new JButton("Logout");
-        jb_headerLogout.setFocusPainted(false);
-        jb_headerLogout.setBackground(new Color(0, 140, 205));
-        jb_headerLogout.setForeground(Color.WHITE);
-        jb_headerLogout.setBorderPainted(false);
-        jb_headerLogout.setOpaque(true);
-        jb_headerLogout.setPreferredSize(new Dimension(110, 34));
-        jb_headerLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JPanel jp_headerRightInner = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         jp_headerRightInner.setBackground(clr_blue);
@@ -63,13 +69,12 @@ public class MyApplicationsFrame extends JFrame {
         Image scaledProfile = rawProfile.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         jl_profileIcon = new JLabel(new ImageIcon(scaledProfile));
 
-        jl_userInfo = new JLabel("Shreeyash  ·  STU2024001");
+        jl_userInfo = new JLabel(studentUserName + " ·  STU" + studentId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(clr_white);
 
         jp_headerRightInner.add(jl_profileIcon);
         jp_headerRightInner.add(jl_userInfo);
-        jp_headerRightInner.add(jb_headerLogout);
 
         JPanel jp_headerRight = new JPanel(new BorderLayout());
         jp_headerRight.setBackground(clr_blue);
@@ -90,28 +95,24 @@ public class MyApplicationsFrame extends JFrame {
         jp_topBar.setBackground(clr_bg);
         jp_topBar.setBorder(new EmptyBorder(0, 0, 14, 0));
 
-        jb_back = new JButton("Back");
+        jb_back = new JButton("← Back");
         jb_back.setFocusPainted(false);
         jb_back.setBackground(clr_white);
         jb_back.setForeground(clr_textDark);
         jb_back.setBorder(new LineBorder(clr_cardBorder, 1));
         jb_back.setOpaque(true);
-        jb_back.setPreferredSize(new Dimension(80, 32));
+        jb_back.setPreferredSize(new Dimension(90, 32));
         jb_back.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jb_back.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         jp_topBar.add(jb_back);
 
         // Table
-        String[] columns = { "Company", "Job Title", "Applied On", "Status" };
-        String[][] data = {
-        	    { "ABC Ltd",      "Software Intern",   "2026-02-10", "Pending"      },
-        	    { "TechNova",     "Web Intern",        "2026-02-11", "Shortlisted"  },
-        	    { "Oceanic Co",   "IT Support Intern", "2026-02-12", "Rejected"     },
-        	    { "FinCore",      "Data Intern",       "2026-02-13", "Accepted"     },
-        	    { "ByteWorks",    "QA Intern",         "2026-02-14", "Pending"      },
-        	    { "Skyline Tech", "UI/UX Intern",      "2026-02-15", "Under Review" },
-        	};
-
+        String[] columns = { "Company Name", "Job Title", "Applied On", "Status" };
+        loadApplicationsTable();
+        
+        
+        String[][] data = rows.toArray(new String[0][]);
         DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -147,44 +148,10 @@ public class MyApplicationsFrame extends JFrame {
         add(jp_content, BorderLayout.CENTER);
 
      // Handler
-        jb_headerLogout.addMouseListener(new MouseAdapter() {
-        	
-            @Override 
-            public void mouseEntered(MouseEvent me) { 
-            	jb_headerLogout.setBackground(clr_blue_hover); 
-            	}
-            
-            @Override 
-            public void mouseExited(MouseEvent me)  { 
-            	jb_headerLogout.setBackground(new Color(0, 140, 205)); 
-            	}
-        });
-
-        jb_headerLogout.addActionListener(new ActionListener() {
-            @Override 
-            public void actionPerformed(ActionEvent ae) {
-                int result = JOptionPane.showConfirmDialog(
-                    null, "Do you want to log out?", "Logout",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE
-                );
-                
-                if (result == JOptionPane.OK_OPTION) {
-                    JOptionPane.showMessageDialog(
-                        null, "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-            }
-        });
 
         jb_back.addMouseListener(new MouseAdapter() {
-            @Override 
-            public void mouseEntered(MouseEvent me) { 
-            	jb_back.setBackground(new Color(230, 235, 245)); 
-            	}
-            @Override 
-            public void mouseExited(MouseEvent me)  { 
-            	jb_back.setBackground(clr_white); 
-            	}
+            @Override public void mouseEntered(MouseEvent e) { jb_back.setBackground(new Color(230, 235, 245)); }
+            @Override public void mouseExited (MouseEvent e) { jb_back.setBackground(clr_white); }
         });
 
         jb_back.addActionListener(new ActionListener() {
@@ -193,6 +160,67 @@ public class MyApplicationsFrame extends JFrame {
                 dispose();
             }
         });
+    }
+    
+    private void fetchStudentName() {
+    	String sql = "SELECT username from student,user where user.userId = student.userId AND studentId = ?";
+      
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	           	myStmt.setInt(1, studentId);
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	studentUserName = result.getString("username");
+	                	                
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(MyApplicationsFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+    }
+    
+    private void loadApplicationsTable() {
+    	String sql =
+    		    "SELECT c.companyName, rp.title AS job_title, a.appliedOn, a.status " +
+    		    "FROM application a " +
+    		    "JOIN recruitmentPosting rp ON a.postingId = rp.postingId " +
+    		    "JOIN company c ON rp.companyId = c.companyId " +
+    		    "WHERE a.studentId = ?";
+    	
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	            myStmt.setString(1, Integer.toString(studentId));
+
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            while (result.next()) {
+	            	rows.add(new String[] {
+	            	        result.getString("companyname"),
+	            	        result.getString("job_title"),
+	            	        result.getString("appliedOn"),
+	            	        result.getString("status")
+	            	});
+
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(MyApplicationsFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
     }
 
 

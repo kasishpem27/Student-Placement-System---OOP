@@ -2,9 +2,19 @@ package student;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import org.mindrot.jbcrypt.BCrypt;
+
+import dbconnection.DBConnection;
 
 public class StudentRegistrationFrame extends JFrame {
 
@@ -12,15 +22,15 @@ public class StudentRegistrationFrame extends JFrame {
     private JLabel jl_leftLogo, jl_leftCompanyName, jl_leftCopyright;
     private JLabel jl_title;
 
-    private JLabel jl_fullName, jl_dob, jl_address, jl_contact, jl_gender, jl_faculty, jl_course, jl_email, jl_password, jl_confirmPassword;
+    private JLabel jl_fullName, jl_dob,jl_section, jl_address, jl_contact, jl_gender, jl_faculty, jl_course,jl_username, jl_email, jl_password, jl_confirmPassword;
 
-    private JTextField jt_fullName, jt_dob, jt_address, jt_contact, jt_course, jt_email;
+    private JTextField jt_fullName, jt_dob, jt_address, jt_contact, jt_course, jt_email, jt_username;
     private JPasswordField jp_password, jp_confirmPassword;
 
     private JRadioButton jrb_male, jrb_female, jrb_ratherNot;
     private ButtonGroup bg_gender;
 
-    private JComboBox jcb_faculty;
+    private JComboBox jcb_faculty, jcb_section;
 
     private JButton jb_signUp;
     private JLabel jl_loginLink;
@@ -35,6 +45,8 @@ public class StudentRegistrationFrame extends JFrame {
             "Faculty of Science",
             "Faculty of Social Studies & Humanities"
     };
+    
+    private final String[] str_sections = { "A", "B" };
 
     //  COLORS
     private final Color clr_blue = new Color(0, 102, 153);
@@ -47,11 +59,12 @@ public class StudentRegistrationFrame extends JFrame {
 
     //  PLACEHOLDERS 
     private final String ph_fullName = "Enter your full name";
-    private final String ph_dob = "DD/MM/YYYY";
+    private final String ph_dob = "YYYY/MM/DD";
     private final String ph_address = "Enter your address";
     private final String ph_contact = "Enter your contact number";
     private final String ph_course = "Enter your course";
     private final String ph_email = "Enter your email address";
+    private final String ph_username = "Enter a username";
     
     // Navigation
     private LoginFrame login;
@@ -75,15 +88,17 @@ public class StudentRegistrationFrame extends JFrame {
 
         JPanel jp_leftCenter = new JPanel(new FlowLayout(FlowLayout.CENTER));
         jp_leftCenter.setBackground(clr_leftPanel);
+        
 
-        ImageIcon leftIcon = new ImageIcon("src/images/logo.png");
-        jl_leftLogo = new JLabel(leftIcon);
+        ImageIcon leftIcon = new ImageIcon("src/images/CareerConnect.png");
+        Image scaledLeftIcon = leftIcon.getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH);
+        jl_leftLogo = new JLabel(new ImageIcon(scaledLeftIcon), SwingConstants.CENTER);
         jl_leftLogo.setHorizontalAlignment(SwingConstants.CENTER);
 
         jl_leftCompanyName = new JLabel("CareerConnect");
         jl_leftCompanyName.setHorizontalAlignment(SwingConstants.CENTER);
         jl_leftCompanyName.setForeground(Color.WHITE);
-        jl_leftCompanyName.setFont(new Font("Arial", Font.BOLD, 18));
+        jl_leftCompanyName.setFont(new Font("Arial", Font.BOLD, 25));
 
         jp_leftCenter.add(jl_leftLogo);
         jp_leftCenter.add(jl_leftCompanyName);
@@ -128,7 +143,7 @@ public class StudentRegistrationFrame extends JFrame {
         jp_formHolder.setBackground(clr_white);
 
         // Actual form 
-        JPanel jp_form = new JPanel(new GridLayout(22, 1, 10, 10));
+        JPanel jp_form = new JPanel(new GridLayout(26, 1, 10, 10));
         jp_form.setBackground(clr_white);
 
         //  FORM FIELDS
@@ -210,7 +225,17 @@ public class StudentRegistrationFrame extends JFrame {
         jt_course.setForeground(Color.GRAY);
         jt_course.setPreferredSize(new Dimension(300, 36));
         jt_course.setBorder(new LineBorder(clr_fieldBorder, 1));
+        
+        
+     // Section
+        jl_section = new JLabel("<html>Section <font color='red'>*</font></html>");
+        jl_section.setFont(new Font("Arial", Font.BOLD, 13));
 
+        jcb_section = new JComboBox(str_sections);
+        jcb_section.setPreferredSize(new Dimension(375, 36));
+        jcb_section.setBackground(clr_white);
+        jcb_section.setBorder(new LineBorder(clr_fieldBorder, 1));
+        
         // Email
         jl_email = new JLabel("<html>Email Address <font color='red'>*</font></html>");
         jl_email.setFont(new Font("Arial", Font.BOLD, 13));
@@ -219,6 +244,14 @@ public class StudentRegistrationFrame extends JFrame {
         jt_email.setForeground(Color.GRAY);
         jt_email.setPreferredSize(new Dimension(300, 36));
         jt_email.setBorder(new LineBorder(clr_fieldBorder, 1));
+        
+        jl_username = new JLabel("<html>Username <font color='red'>*</font></html>");
+        jl_username.setFont(new Font("Arial", Font.BOLD, 13));
+
+        jt_username = new JTextField(ph_username);
+        jt_username.setForeground(Color.GRAY);
+        jt_username.setPreferredSize(new Dimension(300, 36));
+        jt_username.setBorder(new LineBorder(clr_fieldBorder, 1));
 
         // Password
         jl_password = new JLabel("<html>Enter Password <font color='red'>*</font></html>");
@@ -257,9 +290,15 @@ public class StudentRegistrationFrame extends JFrame {
 
         jp_form.add(jl_course);
         jp_form.add(jt_course);
+        
+        jp_form.add(jl_section);
+        jp_form.add(jcb_section);
 
         jp_form.add(jl_email);
         jp_form.add(jt_email);
+        
+        jp_form.add(jl_username);
+        jp_form.add(jt_username);
 
         jp_form.add(jl_password);
         jp_form.add(jp_password);
@@ -430,6 +469,21 @@ public class StudentRegistrationFrame extends JFrame {
                 }
             }
         });
+        
+        jt_username.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (jt_username.getText().equals(ph_username)) {
+                    jt_username.setText("");
+                    jt_username.setForeground(Color.BLACK);
+                }
+            }
+            public void focusLost(FocusEvent e) {
+                if (jt_username.getText().trim().length() == 0) {
+                    jt_username.setText(ph_username);
+                    jt_username.setForeground(Color.GRAY);
+                }
+            }
+        });
 
         // Register button click: validate fields and show result
         jb_signUp.addActionListener(new ActionListener() {
@@ -442,10 +496,15 @@ public class StudentRegistrationFrame extends JFrame {
                 String contact = jt_contact.getText().trim();
                 String course = jt_course.getText().trim();
                 String email = jt_email.getText().trim();
-
+                String username = jt_username.getText().trim();
+                
                 // Password fields return char[] for security reasons
                 char[] pass1 = jp_password.getPassword();
                 char[] pass2 = jp_confirmPassword.getPassword();
+                
+                String normalized = dob.replace('/', '-');
+                LocalDate dobDate = LocalDate.parse(normalized);
+                LocalDate today = LocalDate.now();
 
                 // Convert placeholder text into empty strings for validation
                 if (fullName.equals(ph_fullName)) fullName = "";
@@ -454,6 +513,7 @@ public class StudentRegistrationFrame extends JFrame {
                 if (contact.equals(ph_contact)) contact = "";
                 if (course.equals(ph_course)) course = "";
                 if (email.equals(ph_email)) email = "";
+                if (username.equals(ph_username)) username = "";
 
                 // Validate required fields in order (stop at first invalid)
                 if (fullName.length() == 0) {
@@ -463,12 +523,21 @@ public class StudentRegistrationFrame extends JFrame {
                 }
 
                 if (dob.length() == 0) {
-                    JOptionPane.showMessageDialog(null, "Please enter your date of birth.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please enter your date of birth (YYYY/MM/DD).", "Invalid Field", JOptionPane.ERROR_MESSAGE);
+                    jt_dob.requestFocus();
+                    return;
+                }
+                
+
+                if (dobDate.isAfter(today.minusYears(18))) {
+                    JOptionPane.showMessageDialog(null,
+                            "You must be at least 18 years old to register.",
+                            "Invalid DOB", JOptionPane.ERROR_MESSAGE);
                     jt_dob.requestFocus();
                     return;
                 }
 
-                if (contact.length() == 0) {
+                if (contact.length() < 8) {
                     JOptionPane.showMessageDialog(null, "Please enter your contact number.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
                     jt_contact.requestFocus();
                     return;
@@ -490,6 +559,19 @@ public class StudentRegistrationFrame extends JFrame {
                     jt_email.requestFocus();
                     return;
                 }
+                
+                if (username.length() == 0) {
+                    JOptionPane.showMessageDialog(null, "Please enter a username.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
+                    jt_username.requestFocus();
+                    return;
+                }
+
+                // Optional: basic rule example
+                if (username.length() < 3) {
+                    JOptionPane.showMessageDialog(null, "Username must be at least 3 characters.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
+                    jt_username.requestFocus();
+                    return;
+                }
 
                 if (pass1.length == 0) {
                     JOptionPane.showMessageDialog(null, "Please enter a password.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
@@ -509,11 +591,192 @@ public class StudentRegistrationFrame extends JFrame {
                     jp_confirmPassword.requestFocus();
                     return;
                 }
+                
+                boolean registered = registerStudent(fullName,dob,address,contact,course,email,username, pass1);
+                
+                if (registered) {
+                    login.setVisible(true);
+                    dispose();
 
-                // If all validations pass, show success message
-                JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                
+
             }
         });
+        
+
+    }
+    
+    private void resetRegistrationForm() {
+        // Text fields back to placeholders
+        jt_fullName.setText(ph_fullName);
+        jt_fullName.setForeground(Color.GRAY);
+
+        jt_dob.setText(ph_dob);
+        jt_dob.setForeground(Color.GRAY);
+
+        jt_address.setText(ph_address);
+        jt_address.setForeground(Color.GRAY);
+
+        jt_contact.setText(ph_contact);
+        jt_contact.setForeground(Color.GRAY);
+
+        jt_course.setText(ph_course);
+        jt_course.setForeground(Color.GRAY);
+
+        jt_email.setText(ph_email);
+        jt_email.setForeground(Color.GRAY);
+        
+        jt_username.setText(ph_username);
+        jt_username.setForeground(Color.GRAY);
+
+        // Password fields
+        jp_password.setText("");
+        jp_confirmPassword.setText("");
+
+        // Radio buttons (gender)
+        bg_gender.clearSelection();
+
+        // Combo box
+        jcb_faculty.setSelectedIndex(0);
+        jcb_section.setSelectedIndex(0);
+
+        // Put cursor on first field
+        jt_fullName.requestFocusInWindow();
+    }
+    
+    
+    private boolean registerStudent(String fullName, String dob, String address, String contact, String course, String email, String username, char[] pass1) {
+        
+  
+        String faculty = (String) jcb_faculty.getSelectedItem();
+        String section = (String) jcb_section.getSelectedItem();
+        boolean status = false;
+
+        String gender;
+        if (jrb_male.isSelected()) gender = "Male";
+        else if (jrb_female.isSelected()) gender = "Female";
+        else gender = "Rather not say";
+
+        // Hash password 
+        String hashed = BCrypt.hashpw(new String(pass1), BCrypt.gensalt(12));
+        java.util.Arrays.fill(pass1, '\0'); 
+
+        // Convert DOB to SQL Date
+        java.sql.Date sqlDob;
+        try {
+            
+            String normalized = dob.replace('/', '-');
+            sqlDob = java.sql.Date.valueOf(normalized); // yyyy-mm-dd
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Invalid DOB format. Use YYYY/MM/DD.",
+                    "Invalid Field", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        String UserSql =
+                "INSERT INTO user (username, email, password, role) VALUES (?, ?, ?, ?)";
+
+        String StudentSql =
+        		  "INSERT INTO student " +
+        		  "(fullName, faculty, course, contactNumber, placementStatus, address, dob, gender, userId, section) " +
+        		  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String EmailSql = "SELECT userId from user WHERE email=?";
+        
+        int userId = 0;
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(UserSql)) {
+
+	            myStmt.setString(1, username);
+	            myStmt.setString(2, email);
+	            myStmt.setString(3, hashed);
+	            myStmt.setString(4, "student");
+
+	            int rows = myStmt.executeUpdate();
+	            
+	            if (rows != 1) {
+	            	
+	                JOptionPane.showMessageDialog(null,
+	                        "Registration Failed. Try again",
+	                        "Registration Process Failed",
+	                        JOptionPane.ERROR_MESSAGE);
+	                
+	                return false;
+	            	
+	            }
+	            	
+            	try (PreparedStatement myStmt2 = con.prepareStatement(EmailSql)) {  
+	            	myStmt2.setString(1, email);
+	            	 
+	            	ResultSet result = myStmt2.executeQuery();
+	 	            
+	 	            if (!result.next()) { 
+	 	            // no matching user Id found
+	 	                JOptionPane.showMessageDialog(StudentRegistrationFrame.this,
+		                        "Registration Failed. Try again",
+		                        "Registration Process Failed",
+		                        JOptionPane.ERROR_MESSAGE);
+	 	               resetRegistrationForm();
+		                return false;   
+	                } 
+	 	            
+	 	           userId = result.getInt("userId");
+            	
+	 	            
+	 	           rows = -1;
+            	}
+ 	           try(PreparedStatement myStmt3 = con.prepareStatement(StudentSql)) {
+ 	        	   
+		 	       myStmt3.setString(1, fullName);
+		 	       myStmt3.setString(2, faculty);
+		 	       myStmt3.setString(3, course);
+		 	       myStmt3.setString(4, contact);
+		 	      myStmt3.setBoolean(5, status);
+		 	       myStmt3.setString(6, (address == null || address.isBlank()) ? null : address);
+		 	       myStmt3.setDate(7, sqlDob);
+		 	       myStmt3.setString(8, gender);
+		 	      myStmt3.setInt(9, userId);
+		 	     myStmt3.setString(10, section);
+		             
+		 	       rows = myStmt3.executeUpdate();
+			 	       
+		 	       if (rows != 1) {
+		                JOptionPane.showMessageDialog(StudentRegistrationFrame.this,
+		                        "Registration Failed. Try again ",
+		                        "Registration Process Failed",
+		                        JOptionPane.ERROR_MESSAGE);
+		                resetRegistrationForm();
+		                return false;
+		 	       }
+	 	       
+ 	           }
+ 	           
+               JOptionPane.showMessageDialog(StudentRegistrationFrame.this,
+                       "Registration Successful! Proceed to the login page",
+                       "Registration Process Completed",
+                       JOptionPane.INFORMATION_MESSAGE);
+
+	 	          
+	          
+        } catch (SQLIntegrityConstraintViolationException dup) {
+            JOptionPane.showMessageDialog(StudentRegistrationFrame.this,
+                    "This email or username is already registered.",
+                    "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            return false;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(StudentRegistrationFrame.this,
+                    "Database error while registering.",
+                    "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            resetRegistrationForm();
+            return false;
+            
+        }
+        return true;
     }
 
 }
