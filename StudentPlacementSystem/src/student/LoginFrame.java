@@ -287,12 +287,12 @@ public class LoginFrame extends JFrame {
 				            setVisible(false);
 				            
 			    } else if (role.equals("Company")) {
-				            //CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
-				            //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				            //frame.setSize(1200,750);
-				            //frame.setLocationRelativeTo(null);
-				            //frame.setVisible(true);
-				            //setVisible(false);
+				            CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
+				            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				            frame.setSize(1200,750);
+				            frame.setLocationRelativeTo(null);
+				            frame.setVisible(true);
+				            setVisible(false);
 			    }
 			    
 	            
