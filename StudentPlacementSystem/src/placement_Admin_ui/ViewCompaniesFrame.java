@@ -1,6 +1,6 @@
 package placement_Admin_ui;
 
-import service.DBConnection;
+import dbconnection.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,14 +14,17 @@ public class ViewCompaniesFrame extends JFrame {
     private DefaultTableModel model;
     private JTable table;
     private int adminUserId;
-    public ViewCompaniesFrame(int adminUserId) {
+    private PlacementAdminDashboard dashboard;
+    
+    public ViewCompaniesFrame(PlacementAdminDashboard dashboard,int adminUserId) {
     	 this.adminUserId = adminUserId;
+    	  this.dashboard = dashboard;
     	 
         setTitle("All Companies");
         setSize(1400,700);
 
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         Color PRIMARY_BLUE = new Color(0, 102, 153);
@@ -171,7 +174,7 @@ public class ViewCompaniesFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        	new PlacementAdminDashboard(adminUserId).setVisible(true);
+        	dashboard.setVisible(true);
             dispose();
         }
     }

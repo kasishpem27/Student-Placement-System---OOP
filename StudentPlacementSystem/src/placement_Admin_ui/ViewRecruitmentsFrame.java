@@ -1,6 +1,6 @@
 package placement_Admin_ui;
 
-import service.DBConnection;
+import dbconnection.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,13 +10,14 @@ import java.awt.event.*;
 import java.sql.*;
 
 public class ViewRecruitmentsFrame extends JFrame {
-
+	private PlacementAdminDashboard dashboard;
     private DefaultTableModel model;
     private int adminUserId;
     private JTable table;
     
-    public ViewRecruitmentsFrame(int adminUserId) {
+    public ViewRecruitmentsFrame(PlacementAdminDashboard dashboard,int adminUserId) {
     	 this.adminUserId = adminUserId;
+    	  this.dashboard = dashboard;
         
         setTitle("All Recruitments");
         setSize(1400,700);
@@ -176,7 +177,7 @@ public class ViewRecruitmentsFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        	new PlacementAdminDashboard(adminUserId).setVisible(true);
+        	dashboard.setVisible(true);
             dispose();
         }
     }

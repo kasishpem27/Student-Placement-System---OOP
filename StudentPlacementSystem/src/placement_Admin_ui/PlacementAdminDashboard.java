@@ -1,6 +1,6 @@
 package placement_Admin_ui;
-
-import service.DBConnection;
+import student.LoginFrame;
+import dbconnection.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 
+;
 public class PlacementAdminDashboard extends JFrame {
 
     //THEME COLORS
@@ -22,9 +23,11 @@ public class PlacementAdminDashboard extends JFrame {
     private final Color clr_white = Color.WHITE;
     private final Color clr_cardBorder = new Color(220, 230, 240);
     private final Color clr_textDark = new Color(40, 40, 40);
+    private LoginFrame login;
 
-    public PlacementAdminDashboard(int adminUserId) {
+    public PlacementAdminDashboard(LoginFrame login ,int adminUserId) {
     	this.adminUserId = adminUserId;
+    	this.login = login;
 
         setTitle("Placement Admin Dashboard");
         setLayout(new BorderLayout());
@@ -296,29 +299,58 @@ public class PlacementAdminDashboard extends JFrame {
     //LISTENERS 
     private class StudentManagementListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	new StudentManagementFrame(adminUserId).setVisible(true);
-            dispose();
+        	StudentManagementFrame frame =
+        	        new StudentManagementFrame(PlacementAdminDashboard.this, adminUserId);
+
+        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	frame.setSize(1400,700);
+        	frame.setLocationRelativeTo(null);
+        	frame.setVisible(true);
+
+        	setVisible(false);;
         }
     }
 
     private class FilterListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	new FilterStudentsFrame(adminUserId).setVisible(true);
-            dispose();
+
+        	FilterStudentsFrame frame =
+        	        new FilterStudentsFrame(PlacementAdminDashboard.this, adminUserId);
+
+        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	frame.setSize(1400,700);
+        	frame.setLocationRelativeTo(null);
+        	frame.setVisible(true);
+
+        	setVisible(false);;
         }
     }
 
     private class CompaniesListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	new ViewCompaniesFrame(adminUserId).setVisible(true);
-            dispose();
+        	ViewCompaniesFrame frame =
+        	        new ViewCompaniesFrame(PlacementAdminDashboard.this, adminUserId);
+
+        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	frame.setSize(1400,700);
+        	frame.setLocationRelativeTo(null);
+        	frame.setVisible(true);
+
+        	setVisible(false);;
         }
     }
 
     private class RecruitmentsListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            new ViewRecruitmentsFrame(adminUserId).setVisible(true);
-            dispose();
+        	ViewRecruitmentsFrame frame =
+        	        new ViewRecruitmentsFrame(PlacementAdminDashboard.this, adminUserId);
+
+        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	frame.setSize(1400,700);
+        	frame.setLocationRelativeTo(null);
+        	frame.setVisible(true);
+
+        	setVisible(false);;
         }
     }
     
@@ -338,6 +370,7 @@ public class PlacementAdminDashboard extends JFrame {
             );
 
             if (choice == JOptionPane.YES_OPTION) {
+            	login.setVisible(true);
                 dispose(); // close dashboard
 
                
@@ -345,7 +378,5 @@ public class PlacementAdminDashboard extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new PlacementAdminDashboard(5).setVisible(true);
-    }
+    
 }

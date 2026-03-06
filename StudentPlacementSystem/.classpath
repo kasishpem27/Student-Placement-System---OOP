@@ -6,17 +6,16 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Kasish/Downloads/jbcrypt-0.4.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Kasish/Downloads/mysql-connector-j-9.6.0/mysql-connector-j-9.6.0/mysql-connector-j-9.6.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="/Users/yadavesh24/Downloads/jbcrypt-0.4.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/Kasish/Downloads/jbcrypt-0.4.jar">
+>>>>>>> origin/develop
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
