@@ -266,15 +266,23 @@ public class LoginFrame extends JFrame {
 	            frame.setVisible(true);
 	            setVisible(false);
 	            
-		    	} else if (role.equals("Off-Campus Admin")) {
+		    } else if (role.equals("Off-Campus Admin")) {
 			            AdminDashboardFrame frame = new AdminDashboardFrame(LoginFrame.this, userId);
 			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			            frame.setSize(1100,650);
 			            frame.setLocationRelativeTo(null);
 			            frame.setVisible(true);
 			            setVisible(false);
-		    	}
-		
+			            
+		    } else if (role.equals("Placement Admin")) {
+			            PlacementAdminDashboard frame = new PlacementAdminDashboard(LoginFrame.this, userId);
+			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			            frame.setSize(1100,700);
+			            frame.setLocationRelativeTo(null);
+			            frame.setVisible(true);
+			            setVisible(false);
+		    }
+            
 		        
 		        jt_email.setText("");
 		        jp_password.setText("");
