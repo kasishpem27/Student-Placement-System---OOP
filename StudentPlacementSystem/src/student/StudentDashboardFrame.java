@@ -411,7 +411,12 @@ public class StudentDashboardFrame extends JFrame {
             }
 
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null, "Search Postings clicked.", "Action", JOptionPane.INFORMATION_MESSAGE);
+                JobPostingsFrame frame = new JobPostingsFrame(StudentDashboardFrame.this, studentId);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1500, 700);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                setVisible(false);
             }
         });
 
@@ -444,7 +449,13 @@ public class StudentDashboardFrame extends JFrame {
             }
 
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null, "Off-Campus Application clicked.", "Action", JOptionPane.INFORMATION_MESSAGE);
+                OffCampusFrame frame = new OffCampusFrame(StudentDashboardFrame.this, studentId);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1100, 700);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                setVisible(false);
+            	
             }
         });
 
@@ -458,7 +469,13 @@ public class StudentDashboardFrame extends JFrame {
             }
 
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null, "My Offers clicked.", "Action", JOptionPane.INFORMATION_MESSAGE);
+                OffersFrame frame = new OffersFrame(StudentDashboardFrame.this, studentId);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1100, 700);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                setVisible(false);
+            		
             }
         });
         
