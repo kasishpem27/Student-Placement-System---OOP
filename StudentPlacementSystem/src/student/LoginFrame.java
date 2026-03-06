@@ -14,7 +14,9 @@ import javax.swing.border.LineBorder;
 import org.mindrot.jbcrypt.BCrypt;
 
 import OffCampusAdmin.AdminDashboardFrame;
+import company.CompanyDashboardFrame;
 import dbconnection.DBConnection;
+import placement_Admin_ui.PlacementAdminDashboard;
 
 
 public class LoginFrame extends JFrame {
@@ -274,13 +276,15 @@ public class LoginFrame extends JFrame {
 			            frame.setVisible(true);
 			            setVisible(false);
 			            
-		    } else if (role.equals("Placement Admin")) {
-			            PlacementAdminDashboard frame = new PlacementAdminDashboard(LoginFrame.this, userId);
-			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			            frame.setSize(1100,700);
-			            frame.setLocationRelativeTo(null);
-			            frame.setVisible(true);
-			            setVisible(false);
+		   
+		    
+		    } else if (role.equals("Company")) {
+	            CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
+	            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	            frame.setSize(1100,700);
+	            frame.setLocationRelativeTo(null);
+	            frame.setVisible(true);
+	            setVisible(false);
 		    }
             
 		        
