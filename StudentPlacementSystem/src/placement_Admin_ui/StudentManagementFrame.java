@@ -1,6 +1,6 @@
 package placement_Admin_ui;
 
-import service.DBConnection;
+import dbconnection.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,6 +16,7 @@ public class StudentManagementFrame extends JFrame {
     private JTable table;
     private JTextField searchField;
     private int adminUserId;
+    private PlacementAdminDashboard dashboard;
     
     public class AppTheme {
         public static final Color CLR_WHITE = Color.WHITE;
@@ -23,13 +24,14 @@ public class StudentManagementFrame extends JFrame {
         public static final Color CLR_CARD_BORDER = new Color(220, 220, 220);
     }
 
-    public StudentManagementFrame(int adminUserId) {
+    public StudentManagementFrame(PlacementAdminDashboard dashboard, int adminUserId){
     	 this.adminUserId = adminUserId;
-
+    	  this.dashboard = dashboard;
+    	  
         setTitle("Student Management");
         setSize(1400,700);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         Color PRIMARY_BLUE = new Color(0, 102, 153);
@@ -303,8 +305,8 @@ public class StudentManagementFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        	new PlacementAdminDashboard(adminUserId).setVisible(true);
-            dispose();
+        	dashboard.setVisible(true);
+        	dispose();
         }
     }
 }

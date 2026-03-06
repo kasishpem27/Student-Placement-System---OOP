@@ -5,7 +5,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import service.DBConnection;
+import dbconnection.DBConnection;
 import java.sql.*;
 
 
@@ -13,21 +13,23 @@ public class FilterStudentsFrame extends JFrame {
 
 	private int adminUserId;
     private JComboBox<String> courseBox;
+    
     private JComboBox<String> facultyBox;
     private JComboBox<String> statusBox;
     private JComboBox<String> sectionBox;
 
     private DefaultTableModel model;
+	private PlacementAdminDashboard dashboard;
 
-    public FilterStudentsFrame(int adminUserId) {
-    	
+    public FilterStudentsFrame(PlacementAdminDashboard dashboard,int adminUserId) {
+    	 this.dashboard = dashboard;
     	 this.adminUserId = adminUserId;
 
         setTitle("Filter Students");
         setSize(1400,700);
 
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         Color PRIMARY_BLUE = new Color(0, 102, 153);
@@ -298,7 +300,7 @@ public class FilterStudentsFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        	new PlacementAdminDashboard(adminUserId).setVisible(true);
+        	dashboard.setVisible(true);
             dispose();
         }
     }
