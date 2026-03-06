@@ -129,7 +129,8 @@ public class ViewApplicationFrame extends JFrame {
 
         jt_applicationsTable = new JTable(dtm_applicationsModel);
         jt_applicationsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        jt_applicationsTable.getColumnModel().getColumn(3).setPreferredWidth(200);
+        jt_applicationsTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+        jt_applicationsTable.getColumnModel().getColumn(2).setPreferredWidth(150);
         jt_applicationsTable.setRowHeight(30);
         jt_applicationsTable.setGridColor(new Color(240, 244, 248));
         jt_applicationsTable.setBackground(clr_white);
