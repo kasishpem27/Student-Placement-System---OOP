@@ -114,7 +114,7 @@ public class AdminDashboardFrame extends JFrame {
         jp_headerLeft.setBackground(clr_blue);
 
         rawLogoIcon    = new ImageIcon("src/images/CareerConnect.png");
-        scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+        scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
         jl_headerLogo  = new JLabel(new ImageIcon(scaledLogoIcon));
         jl_headerLogo.setHorizontalAlignment(SwingConstants.LEFT);
 
@@ -423,7 +423,7 @@ public class AdminDashboardFrame extends JFrame {
 
     private void loadStats() {
         int total = 0, pending = 0, selected = 0, rejected = 0;
-        String sql = "SELECT status, COUNT(*) AS cnt FROM application GROUP BY status";
+        String sql = "SELECT status, COUNT(*) AS cnt FROM offcampusapplication GROUP BY status";
         try (Connection con = DBConnection.getConnection();
              Statement  st  = con.createStatement();
              ResultSet  rs  = st.executeQuery(sql)) {

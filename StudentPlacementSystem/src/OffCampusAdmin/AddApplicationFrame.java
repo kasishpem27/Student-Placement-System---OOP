@@ -329,6 +329,16 @@ public class AddApplicationFrame extends JFrame {
             return;
         }
 
+        // 2. Student ID must be numeric
+        String studentId = jtf_studentId.getText().trim();
+        if (!studentId.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this,
+                "Student ID must be a numeric value.",
+                "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 3. Date format check
         String rawDate = jtf_date.getText().trim();
         if (!rawDate.matches("\\d{4}/\\d{2}/\\d{2}")) {
             JOptionPane.showMessageDialog(this,
@@ -337,7 +347,7 @@ public class AddApplicationFrame extends JFrame {
             return;
         }
 
-        // Parse and check the 30-day window
+        // 4. Parse and validate the date value
         java.time.LocalDate appliedDate;
         try {
             appliedDate = java.time.LocalDate.parse(rawDate.replace("/", "-"));
@@ -348,6 +358,7 @@ public class AddApplicationFrame extends JFrame {
             return;
         }
 
+        // 5. 30-day window check
         java.time.LocalDate today    = java.time.LocalDate.now();
         java.time.LocalDate earliest = today.minusDays(30);
 
@@ -364,28 +375,27 @@ public class AddApplicationFrame extends JFrame {
             return;
         }
 
-        String dbDate    = rawDate.replace("/", "-");
-        String studentId = jtf_studentId.getText().trim();
-        
+        String dbDate = rawDate.replace("/", "-");
 
-        // 3. Validate that the Student ID exists
+        // 6. Validate that the Student ID exists in DB
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(
                  "SELECT studentId FROM student WHERE studentId = ?")) {
             ps.setString(1, studentId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                JOptionPane.showMessageDialog(this,
-                    "Student ID \"" + studentId + "\" does not exist in the system.",
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
-                return;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    JOptionPane.showMessageDialog(this,
+                        "Student ID \"" + studentId + "\" does not exist in the system.",
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
             }
         } catch (SQLException ex) {
             AdminDashboardFrame.showDbError(ex);
             return;
         }
 
-        // 4. All checks passed — insert into offCampusApplication
+        // 7. All checks passed — insert into offCampusApplication
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(
                  "INSERT INTO offCampusApplication " +

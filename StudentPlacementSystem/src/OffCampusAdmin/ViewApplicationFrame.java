@@ -177,24 +177,22 @@ public class ViewApplicationFrame extends JFrame {
     }
 
     private void loadApplications() {
-        String sql = "SELECT a.applicationId, s.studentId, s.fullName, " +
-                     "       c.companyName, rp.title AS role, a.appliedOn, a.status " +
-                     "FROM application a " +
-                     "JOIN student s           ON a.studentId  = s.studentId " +
-                     "JOIN recruitmentPosting rp ON a.postingId = rp.postingId " +
-                     "JOIN company c           ON rp.companyId = c.companyId " +
-                     "ORDER BY a.applicationId";
+        String sql = "SELECT s.studentId, s.fullName, " +
+                     "       a.companyName, a.jobTitle, a.appliedDate, a.status " +
+                     "FROM offCampusApplication a " +
+                     "JOIN student s ON a.studentId = s.studentId " +
+                     "ORDER BY a.offCampusAppId";
 
         try (Connection con = DBConnection.getConnection();
              Statement  st  = con.createStatement();
              ResultSet  rs  = st.executeQuery(sql)) {
             while (rs.next()) {
                 dtm_applicationsModel.addRow(new Object[]{
-                    rs.getInt("studentId"),
+                    rs.getInt   ("studentId"),
                     rs.getString("fullName"),
                     rs.getString("companyName"),
-                    rs.getString("role"),
-                    rs.getString("appliedOn"),
+                    rs.getString("jobTitle"),
+                    rs.getString("appliedDate"),
                     rs.getString("status")
                 });
             }
