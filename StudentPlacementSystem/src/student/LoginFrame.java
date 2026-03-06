@@ -259,35 +259,46 @@ public class LoginFrame extends JFrame {
             
             boolean authenticated = authenticateUser(email, new String(pass),role);
             
-            if (role.equals("student")){
-	            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
-	            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	            frame.setSize(1100,700);
-	            frame.setLocationRelativeTo(null);
-	            frame.setVisible(true);
-	            setVisible(false);
-	            
-		    } else if (role.equals("Off-Campus Admin")) {
-			            AdminDashboardFrame frame = new AdminDashboardFrame(LoginFrame.this, userId);
-			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			            frame.setSize(1100,650);
-			            frame.setLocationRelativeTo(null);
-			            frame.setVisible(true);
-			            setVisible(false);
-			            
-		    } else if (role.equals("Placement Admin")) {
-			            PlacementAdminDashboard frame = new PlacementAdminDashboard(LoginFrame.this, userId);
-			            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			            frame.setSize(1100,700);
-			            frame.setLocationRelativeTo(null);
-			            frame.setVisible(true);
-			            setVisible(false);
-		    }
+            if (authenticated) {
             
-		        
-		        jt_email.setText("");
-		        jp_password.setText("");
-		        }
+	            if (role.equals("student")){
+		            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
+		            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		            frame.setSize(1100,700);
+		            frame.setLocationRelativeTo(null);
+		            frame.setVisible(true);
+		            setVisible(false);
+		            
+			    } else if (role.equals("Off-Campus Admin")) {
+				            AdminDashboardFrame frame = new AdminDashboardFrame(LoginFrame.this, userId);
+				            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				            frame.setSize(1100,650);
+				            frame.setLocationRelativeTo(null);
+				            frame.setVisible(true);
+				            setVisible(false);
+				            
+			    } else if (role.equals("Placement Admin")) {
+				            PlacementAdminDashboard frame = new PlacementAdminDashboard(LoginFrame.this, userId);
+				            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				            frame.setSize(1100,700);
+				            frame.setLocationRelativeTo(null);
+				            frame.setVisible(true);
+				            setVisible(false);
+				            
+			    } else if (role.equals("Company")) {
+				            CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
+				            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				            frame.setSize(1200,750);
+				            frame.setLocationRelativeTo(null);
+				            frame.setVisible(true);
+				            setVisible(false);
+			    }
+			    
+	            
+			        jt_email.setText("");
+			        jp_password.setText("");
+			        
+        	}
             
             
         }
