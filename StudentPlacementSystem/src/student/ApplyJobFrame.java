@@ -19,12 +19,13 @@ public class ApplyJobFrame extends JFrame {
     private final Color clr_textMuted   = new Color(90, 90, 90);
     private final Color clr_acceptGreen = new Color(34, 139, 34);
 
-    private final StudentDashboardFrame dashboard;
-    private final JobPostingsFrame      jobPostingsFrame;
-    private final int                   studentId;
-    private final int                   postingId;
-    private final String                company;
-    private final String                role;
+    private  StudentDashboardFrame dashboard;
+    private JobPostingsFrame      jobPostingsFrame;
+    private int                   studentId;
+    private int                   postingId;
+    private String                company;
+    private String                role;
+    private String studentUserName;
 
     private JButton jb_logout;
     private JButton jb_back;
@@ -43,12 +44,12 @@ public class ApplyJobFrame extends JFrame {
     public ApplyJobFrame(StudentDashboardFrame dashboard, JobPostingsFrame jobPostingsFrame,
                          int studentId, int postingId, String company, String role) {
         super("Apply — " + company + " · " + role);
-        this.dashboard        = dashboard;
         this.jobPostingsFrame = jobPostingsFrame;
         this.studentId        = studentId;
         this.postingId        = postingId;
         this.company          = company;
         this.role             = role;
+        this.dashboard = dashboard;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1100, 700);
@@ -71,7 +72,7 @@ public class ApplyJobFrame extends JFrame {
 
         JPanel jp_headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         jp_headerRight.setBackground(clr_blue);
-        JLabel jl_userInfo = new JLabel(dashboard.studentName + "  ·  " + dashboard.studentIdStr);
+        JLabel jl_userInfo = new JLabel(studentUserName + "  ·  " + studentId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(new Color(190, 220, 240));
 
@@ -332,9 +333,9 @@ public class ApplyJobFrame extends JFrame {
 
     // GO BACK — called from BackListener and SubmitListener
     private void goBack() {
+    	jobPostingsFrame.setVisible(true);
+    	dashboard.refreshGridStats();
         dispose();
-        dashboard.refreshStats();
-        jobPostingsFrame.returnToJobPostings();
     }
 
     // BUILD ELIGIBILITY TEXT — complex DB logic, called once from constructor
@@ -461,6 +462,32 @@ public class ApplyJobFrame extends JFrame {
             copied[i] = copyFile(sources[i]);
         }
         return copied;
+    }
+    
+    private void fetchStudentName() {
+    	String sql = "SELECT username from student,user where user.userId = student.userId AND studentId = ?";
+      
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	           	myStmt.setInt(1, studentId);
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	studentUserName = result.getString("username");
+	                	                
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(ApplyJobFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
     }
 
 }

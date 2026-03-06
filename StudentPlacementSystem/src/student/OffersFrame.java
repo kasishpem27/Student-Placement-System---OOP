@@ -18,8 +18,8 @@ public class OffersFrame extends JFrame {
     private final Color clr_cardBorder = new Color(220, 230, 240);
     private final Color clr_textDark   = new Color(40, 40, 40);
 
-    private final StudentDashboardFrame dashboard;
-    private final int studentId;
+    private StudentDashboardFrame dashboard;
+    private int studentId;
 
     private JButton jb_logout;
     private JButton jb_back;
@@ -31,6 +31,7 @@ public class OffersFrame extends JFrame {
 
     private JRadioButton jrb_job;
     private JRadioButton jrb_placement;
+    private String studentUserName;
 
     public OffersFrame(StudentDashboardFrame dashboard, int studentId) {
         super("Offers");
@@ -43,7 +44,8 @@ public class OffersFrame extends JFrame {
         setLayout(new BorderLayout());
         setResizable(false);
         getContentPane().setBackground(clr_bg);
-
+        
+        fetchStudentName();
         // HEADER
         JPanel jp_header = new JPanel(new BorderLayout());
         jp_header.setBackground(clr_blue);
@@ -58,7 +60,7 @@ public class OffersFrame extends JFrame {
 
         JPanel jp_headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         jp_headerRight.setBackground(clr_blue);
-        JLabel jl_userInfo = new JLabel(dashboard.studentName + "  ·  " + dashboard.studentIdStr);
+        JLabel jl_userInfo = new JLabel(studentUserName + "  ·  " + studentId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(new Color(190, 220, 240));
 
@@ -233,8 +235,9 @@ public class OffersFrame extends JFrame {
     // BACK LISTENER
     private class BackListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	dashboard.setVisible(true);
             dispose();
-            dashboard.returnToDashboard();
+            
         }
     }
 
@@ -256,7 +259,7 @@ public class OffersFrame extends JFrame {
                 model.setValueAt("Accepted", row, 4);
                 jb_accept.setEnabled(false);
                 jb_reject.setEnabled(false);
-                dashboard.refreshStats();
+                dashboard.refreshGridStats();
                 JOptionPane.showMessageDialog(OffersFrame.this,
                     "Offer accepted!\n\nCompany : " + company + "\nRole    : " + role + "\n\nCongratulations!",
                     "Accepted", JOptionPane.INFORMATION_MESSAGE);
@@ -279,7 +282,7 @@ public class OffersFrame extends JFrame {
                 model.setValueAt("Rejected", row, 4);
                 jb_accept.setEnabled(false);
                 jb_reject.setEnabled(false);
-                dashboard.refreshStats();
+                dashboard.refreshGridStats();
                 JOptionPane.showMessageDialog(OffersFrame.this,
                     "Offer from " + company + " declined. Placement office notified.",
                     "Declined", JOptionPane.INFORMATION_MESSAGE);
@@ -346,5 +349,31 @@ public class OffersFrame extends JFrame {
             ResultSet rs = ps.executeQuery();
             return rs.next() && rs.getInt(1) > 0;
         } catch (SQLException ex) { return false; }
+    }
+    
+    private void fetchStudentName() {
+    	String sql = "SELECT username from student,user where user.userId = student.userId AND studentId = ?";
+      
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	           	myStmt.setInt(1, studentId);
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	studentUserName = result.getString("username");
+	                	                
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(OffersFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
     }
 }

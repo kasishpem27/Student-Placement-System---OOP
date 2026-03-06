@@ -12,8 +12,6 @@ import dbconnection.DBConnection;
 
 public class JobPostingsFrame extends JFrame {
 
-    private final StudentDashboardFrame dashboard;
-    private final int studentId;
 
     private JButton jb_back;
     private JButton jb_logout;
@@ -28,11 +26,17 @@ public class JobPostingsFrame extends JFrame {
 
     private final Color PRIMARY_BLUE = new Color(0, 102, 153);
     private final Color CARD_COLOR   = Color.WHITE;
+    
+    private StudentDashboardFrame dashboard;
+    private int studentId;
+    private String studentUserName;
 
     public JobPostingsFrame(StudentDashboardFrame dashboard, int studentId) {
         this.dashboard = dashboard;
         this.studentId = studentId;
-
+        
+        
+        fetchStudentName();
         setTitle("Job Postings");
         setSize(1500, 700);
         setLocationRelativeTo(null);
@@ -58,7 +62,7 @@ public class JobPostingsFrame extends JFrame {
 
         JPanel jp_headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         jp_headerRight.setBackground(PRIMARY_BLUE);
-        JLabel jl_userInfo = new JLabel(dashboard.studentName + "  ·  " + dashboard.studentIdStr);
+        JLabel jl_userInfo = new JLabel(studentUserName + "  ·  " + studentId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(Color.WHITE);
 
@@ -240,8 +244,10 @@ public class JobPostingsFrame extends JFrame {
     // BACK LISTENER
     private class BackListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	dashboard.refreshGridStats();
+        	dashboard.setVisible(true);
             dispose();
-            dashboard.returnToDashboard();
+            
         }
     }
 
@@ -347,8 +353,29 @@ public class JobPostingsFrame extends JFrame {
         } catch (SQLException ex) { return false; }
     }
 
-    // Called by ApplyJobFrame after submission or cancel
-    public void returnToJobPostings() {
-        setVisible(true);
+    private void fetchStudentName() {
+    	String sql = "SELECT username from student,user where user.userId = student.userId AND studentId = ?";
+      
+        
+        try (	
+	        	Connection con = DBConnection.getConnection();
+	            PreparedStatement myStmt = con.prepareStatement(sql)) { 
+
+	           	myStmt.setInt(1, studentId);
+	            ResultSet result = myStmt.executeQuery();
+	            
+	            if (result.next()) {
+	           
+	            	studentUserName = result.getString("username");
+	                	                
+	            }
+	            
+	           
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(JobPostingsFrame.this,
+	                    "DB Error: " + ex.getMessage(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
     }
 }

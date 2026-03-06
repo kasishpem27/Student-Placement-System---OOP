@@ -261,7 +261,7 @@ public class LoginFrame extends JFrame {
             
             if (authenticated) {
             
-	            if (role.equals("student")){
+	            if (role.equals("Student")){
 		            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
 		            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		            frame.setSize(1100,700);
@@ -286,12 +286,12 @@ public class LoginFrame extends JFrame {
 				            setVisible(false);
 				            
 			    } else if (role.equals("Company")) {
-				            CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
-				            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				            frame.setSize(1200,750);
-				            frame.setLocationRelativeTo(null);
-				            frame.setVisible(true);
-				            setVisible(false);
+				            //CompanyDashboardFrame frame = new CompanyDashboardFrame(LoginFrame.this, userId);
+				            //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				            //frame.setSize(1200,750);
+				            //frame.setLocationRelativeTo(null);
+				            //frame.setVisible(true);
+				            //setVisible(false);
 			    }
 			    
 	            
@@ -372,4 +372,5 @@ public class LoginFrame extends JFrame {
             return true;
     }
     
-}
+ }
+}    

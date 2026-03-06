@@ -545,6 +545,10 @@ public class StudentDashboardFrame extends JFrame {
 	                    JOptionPane.ERROR_MESSAGE);
 	        }
     }
-
+    
+    public void refreshGridStats() {
+    	calculateGridStats();
+    }
+    
 
 }
