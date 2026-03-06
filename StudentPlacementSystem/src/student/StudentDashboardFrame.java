@@ -548,6 +548,10 @@ public class StudentDashboardFrame extends JFrame {
     
     public void refreshGridStats() {
     	calculateGridStats();
+    	jl_totalApplicationsValue.setText(String.valueOf(totalApplicationsCount));
+    	jl_pendingApplicationsValue.setText(String.valueOf(pendingCount));
+    	jl_acceptedApplicationsValue.setText(String.valueOf(acceptedCount));
+    	jl_rejectedApplicationsValue.setText(String.valueOf(rejectedCount));
     }
     
 
