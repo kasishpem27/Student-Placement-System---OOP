@@ -7,9 +7,9 @@ import java.sql.*;
 public class DBConnection {
 	
 	static final String DB_URL =
-			"jdbc:mysql://localhost:3306/StudentPlacementSystem?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+			"jdbc:mysql://localhost:3306/studentplacementsystem?useSSL=false&serverTimezone=UTC";
 	static final String username = "root";
-	static final String password = "java1234$";
+	static final String password = "Java1234$";
 
 	public static void main(String[] args) {
 		try {

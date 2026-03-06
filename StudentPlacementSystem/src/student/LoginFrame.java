@@ -261,7 +261,8 @@ public class LoginFrame extends JFrame {
             boolean authenticated = authenticateUser(email, new String(pass),role);
             
 
-            
+            if (authenticated) {
+            	
 	            if (role.equals("Student")){
 		            StudentDashboardFrame frame = new StudentDashboardFrame(LoginFrame.this, userId);
 		            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -373,4 +374,5 @@ public class LoginFrame extends JFrame {
             return true;
     }
     
- }
+}
+}
