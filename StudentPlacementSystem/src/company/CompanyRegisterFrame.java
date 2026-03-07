@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import student.LoginFrame;
+
 public class CompanyRegisterFrame extends JFrame {
 
     // ── UI COMPONENTS ──
@@ -49,8 +51,11 @@ public class CompanyRegisterFrame extends JFrame {
     private final String ph_website     = "Enter your company website";
     private final String ph_brn         = "Enter your BRN";
     private final String ph_desc        = "Enter company description";
-
-    public CompanyRegisterFrame() {
+    
+    
+    private LoginFrame login;
+    
+    public CompanyRegisterFrame(LoginFrame login) {
         super("CareerConnect - Company Registration");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
@@ -379,7 +384,7 @@ public class CompanyRegisterFrame extends JFrame {
                 jl_loginLink.setForeground(clr_link);
             }
             public void mouseClicked(MouseEvent e) {
-                new LoginFrame().setVisible(true);
+                login.setVisible(true);
                 dispose();
             }
         });

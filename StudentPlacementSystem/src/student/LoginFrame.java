@@ -17,7 +17,7 @@ import OffCampusAdmin.AdminDashboardFrame;
 import company.CompanyDashboardFrame;
 import dbconnection.DBConnection;
 import placement_Admin_ui.PlacementAdminDashboard;
-
+import company.CompanyRegisterFrame;
 
 public class LoginFrame extends JFrame {
 
@@ -224,10 +224,12 @@ public class LoginFrame extends JFrame {
             }
 
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null,
-                        "Register as Company clicked (open Company Register frame here).",
-                        "Register",
-                        JOptionPane.INFORMATION_MESSAGE);
+                CompanyRegisterFrame frame = new CompanyRegisterFrame(LoginFrame.this);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1000, 900);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                setVisible(false);
             }
         });
     }
@@ -375,4 +377,9 @@ public class LoginFrame extends JFrame {
     }
     
 }
+
+	public void setVisitble(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
 }
