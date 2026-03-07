@@ -293,7 +293,7 @@ public class ApplyJobFrame extends JFrame {
 
                     if (file_cv != null) {
                         psDoc.setInt(1, applicationId); psDoc.setString(2, "CV");
-                        psDoc.setString(3, file_cv.getName()); psDoc.setString(4, "uploads/" + file_cv.getName());
+                        psDoc.setString(3, file_cv.getName()); psDoc.setString(4, "src/uploads/" + file_cv.getName());
                         psDoc.executeUpdate();
                     }
                     if (file_coverLetter != null) {
