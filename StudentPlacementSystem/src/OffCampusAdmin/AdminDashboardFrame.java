@@ -114,7 +114,7 @@ public class AdminDashboardFrame extends JFrame {
         jp_headerLeft.setBackground(clr_blue);
 
         rawLogoIcon    = new ImageIcon("src/images/CareerConnect.png");
-        scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+        scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(38, 34, Image.SCALE_SMOOTH);
         jl_headerLogo  = new JLabel(new ImageIcon(scaledLogoIcon));
         jl_headerLogo.setHorizontalAlignment(SwingConstants.LEFT);
 

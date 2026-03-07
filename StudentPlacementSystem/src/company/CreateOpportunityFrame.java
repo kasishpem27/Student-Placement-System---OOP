@@ -16,11 +16,11 @@ import java.sql.ResultSet;
 
 public class CreateOpportunityFrame extends JFrame {
 
-    private final Color clr_blue       = Theme.CLR_BLUE;
+    private final Color clr_blue       = new Color(0, 102, 153);
     private final Color clr_blue_hover = new Color(0, 122, 183);
     private final Color clr_white      = Color.WHITE;
-    private final Color clr_bg         = Theme.CLR_PANEL;
-    private final Color clr_cardBorder = Theme.CLR_BORDER;
+    private final Color clr_bg         = new Color(245, 247, 250);
+    private final Color clr_cardBorder = new Color(220, 225, 230);
     private final Color clr_textDark   = new Color(40, 40, 40);
     private final Color clr_bottomBackground = new Color(240, 244, 248);
 
@@ -166,8 +166,7 @@ public class CreateOpportunityFrame extends JFrame {
         Font base = new Font("Segoe UI", Font.PLAIN, 13);
         Color lc = new Color(60, 60, 60);
 
-        // JOB OPPORTUNITY FORM, Rows: Title*, Description*, Job Type* (radio), Location*, Work Mode, Salary*, Working Hours, Deadline*, Confirm
-
+        // JOB OPPORTUNITY FORM
         jt_Job_title    = new JTextField();
         jt_Job_title.setFont(base);
         jt_Job_location = new JTextField();
@@ -372,8 +371,7 @@ public class CreateOpportunityFrame extends JFrame {
         jp_jobForm.setBackground(clr_white);
         jp_jobForm.add(jp_jobRows, BorderLayout.NORTH);
 
-        // PLACEMENT FORM, Rows: Title*, Description*, Location*, Work Mode, Stipend*, Duration*, Deadline*, Confirm
-
+        // PLACEMENT FORM
         jt_Pl_title    = new JTextField();
         jt_Pl_title.setFont(base);
         jt_Pl_location = new JTextField();
@@ -546,7 +544,7 @@ public class CreateOpportunityFrame extends JFrame {
         jp_placementForm.setBackground(clr_white);
         jp_placementForm.add(jp_plRows, BorderLayout.NORTH);
 
-        // FORM HOLDER — swaps job/placement form on tab click
+        // FORM HOLDER
         jp_formHolder = new JPanel(new BorderLayout());
         jp_formHolder.setBackground(clr_white);
         jp_formHolder.add(jp_jobForm, BorderLayout.CENTER);
@@ -583,9 +581,7 @@ public class CreateOpportunityFrame extends JFrame {
 
         add(jp_wrapper, BorderLayout.CENTER);
 
-        // ═══════════════════════════════════════════════
-        // ALL LISTENERS
-        // ═══════════════════════════════════════════════
+        // LISTENERS
         jb_back.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 jb_back.setBackground(new Color(230, 235, 245));
@@ -631,7 +627,7 @@ public class CreateOpportunityFrame extends JFrame {
                 jb_tabJob.setBorder(new LineBorder(clr_cardBorder, 2));
                 jp_formHolder.removeAll();
                 jp_formHolder.add(jp_placementForm, BorderLayout.CENTER);
-                jp_formHolder.revalidate(); // associated with repaint since two panels changing
+                jp_formHolder.revalidate();
                 jp_formHolder.repaint();
             }
         });
@@ -645,7 +641,7 @@ public class CreateOpportunityFrame extends JFrame {
         }
     }
 
-    // CREATE LISTENER — detects active tab and validates/submits accordingly
+    // CREATE LISTENER
     private class CreateHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             boolean isJob = jp_formHolder.isAncestorOf(jp_jobForm);
@@ -683,7 +679,6 @@ public class CreateOpportunityFrame extends JFrame {
                 String jobType = rbJob_fullTime.isSelected() ? "Full-time" : "Part-time";
                 String mode    = rbJob_onsite.isSelected() ? "On-site" : (rbJob_hybrid.isSelected() ? "Hybrid" : "Remote");
                 String hours   = jt_Job_hours.getText().trim();
-                String type    = "Job Opportunity (" + jobType + ")";
 
                 try (Connection con = DBConnection.getConnection()) {
                     Integer companyDbId = null;
@@ -699,7 +694,6 @@ public class CreateOpportunityFrame extends JFrame {
                         JOptionPane.showMessageDialog(CreateOpportunityFrame.this, "Company not found in DB for ID: " + companyId, "Database", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    // Insert into recruitmentPosting
                     int postingId;
                     String sqlPosting = "INSERT INTO recruitmentPosting (title, description, applicationDeadline, availabilityStatus, isActive, location, workMode, companyId) VALUES (?, ?, ?, 1, 1, ?, ?, ?)";
                     try (PreparedStatement ps = con.prepareStatement(sqlPosting, java.sql.Statement.RETURN_GENERATED_KEYS)) {
@@ -717,21 +711,20 @@ public class CreateOpportunityFrame extends JFrame {
                             postingId = keys.getInt(1);
                         }
                     }
-                    // Insert into jobOpportunity
                     String sqlJob = "INSERT INTO jobOpportunity (postingId, jobType, salary, workingHours) VALUES (?, ?, ?, ?)";
                     try (PreparedStatement ps = con.prepareStatement(sqlJob)) {
                         ps.setInt(1, postingId);
                         ps.setString(2, jobType.equals("Full-time") ? "Full-Time" : "Part-Time");
                         try {
-                        ps.setDouble(3, Double.parseDouble(salary));
-                    } catch (NumberFormatException nfe) {
-                        ps.setNull(3, java.sql.Types.DOUBLE);
-                    }
+                            ps.setDouble(3, Double.parseDouble(salary));
+                        } catch (NumberFormatException nfe) {
+                            ps.setNull(3, java.sql.Types.DOUBLE);
+                        }
                         if (hours.isEmpty()) {
-                        ps.setNull(4, java.sql.Types.VARCHAR);
-                    } else {
-                        ps.setString(4, hours);
-                    }
+                            ps.setNull(4, java.sql.Types.VARCHAR);
+                        } else {
+                            ps.setString(4, hours);
+                        }
                         ps.executeUpdate();
                     }
                     JOptionPane.showMessageDialog(CreateOpportunityFrame.this, "Job posting created!\nPosting ID: " + postingId, "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -796,7 +789,6 @@ public class CreateOpportunityFrame extends JFrame {
                         JOptionPane.showMessageDialog(CreateOpportunityFrame.this, "Company not found in DB for ID: " + companyId, "Database", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    // Insert into recruitmentPosting
                     int postingId;
                     String sqlPosting = "INSERT INTO recruitmentPosting (title, description, applicationDeadline, availabilityStatus, isActive, location, workMode, companyId) VALUES (?, ?, ?, 1, 1, ?, ?, ?)";
                     try (PreparedStatement ps = con.prepareStatement(sqlPosting, java.sql.Statement.RETURN_GENERATED_KEYS)) {
@@ -814,16 +806,15 @@ public class CreateOpportunityFrame extends JFrame {
                             postingId = keys.getInt(1);
                         }
                     }
-                    // Insert into placementOpportunity
                     String sqlPl = "INSERT INTO placementOpportunity (postingId, placementDuration, stipend) VALUES (?, ?, ?)";
                     try (PreparedStatement ps = con.prepareStatement(sqlPl)) {
                         ps.setInt(1, postingId);
                         ps.setString(2, duration);
                         try {
-                        ps.setDouble(3, Double.parseDouble(stipend));
-                    } catch (NumberFormatException nfe) {
-                        ps.setNull(3, java.sql.Types.DOUBLE);
-                    }
+                            ps.setDouble(3, Double.parseDouble(stipend));
+                        } catch (NumberFormatException nfe) {
+                            ps.setNull(3, java.sql.Types.DOUBLE);
+                        }
                         ps.executeUpdate();
                     }
                     JOptionPane.showMessageDialog(CreateOpportunityFrame.this, "Placement posting created!\nPosting ID: " + postingId, "Success", JOptionPane.INFORMATION_MESSAGE);

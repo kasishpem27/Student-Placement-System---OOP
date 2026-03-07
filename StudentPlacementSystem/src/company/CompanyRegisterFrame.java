@@ -19,8 +19,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import student.LoginFrame;
-
 public class CompanyRegisterFrame extends JFrame {
 
     // ── UI COMPONENTS ──
@@ -51,18 +49,17 @@ public class CompanyRegisterFrame extends JFrame {
     private final String ph_website     = "Enter your company website";
     private final String ph_brn         = "Enter your BRN";
     private final String ph_desc        = "Enter company description";
-    
-    
     private LoginFrame login;
-    
+
     public CompanyRegisterFrame(LoginFrame login) {
+    	
         super("CareerConnect - Company Registration");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(clr_white);
-
+        this.login = login;
         // ── MAIN CONTAINER ──
         JPanel jp_main = new JPanel(new GridLayout(1, 2, 0, 0));
         jp_main.setBackground(clr_white);
@@ -518,14 +515,30 @@ public class CompanyRegisterFrame extends JFrame {
                 char[] pass1    = jp_password.getPassword();
                 char[] pass2    = jp_confirmPassword.getPassword();
 
-                if (name.equals(ph_companyName)) name = "";
-                if (address.equals(ph_address)) address = "";
-                if (contact.equals(ph_contact)) contact = "";
-                if (industry.equals(ph_industry)) industry = "";
-                if (email.equals(ph_email)) email = "";
-                if (website.equals(ph_website)) website = "";
-                if (brn.equals(ph_brn)) brn = "";
-                if (desc.equals(ph_desc)) desc = "";
+                if (name.equals(ph_companyName)) {
+                    name = "";
+                }
+                if (address.equals(ph_address)) {
+                    address = "";
+                }
+                if (contact.equals(ph_contact)) {
+                    contact = "";
+                }
+                if (industry.equals(ph_industry)) {
+                    industry = "";
+                }
+                if (email.equals(ph_email)) {
+                    email = "";
+                }
+                if (website.equals(ph_website)) {
+                    website = "";
+                }
+                if (brn.equals(ph_brn)) {
+                    brn = "";
+                }
+                if (desc.equals(ph_desc)) {
+                    desc = "";
+                }
 
                 if (name.isEmpty()) {
                     JOptionPane.showMessageDialog(CompanyRegisterFrame.this, "Please enter your company name.", "Invalid Field", JOptionPane.ERROR_MESSAGE);
@@ -661,12 +674,13 @@ public class CompanyRegisterFrame extends JFrame {
 
         } catch (Exception ex) {
             String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
-            if (msg.contains("email") || msg.contains("uk_") || msg.contains("unique"))
+            if (msg.contains("email") || msg.contains("uk_") || msg.contains("unique")) {
                 JOptionPane.showMessageDialog(CompanyRegisterFrame.this,
                         "Email or username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
-            else
+            } else {
                 JOptionPane.showMessageDialog(CompanyRegisterFrame.this,
                         "Database error:\n" + ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            }
             return false;
         }
     }

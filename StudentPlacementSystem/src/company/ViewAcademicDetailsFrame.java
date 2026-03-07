@@ -18,11 +18,11 @@ import java.sql.ResultSet;
 
 public class ViewAcademicDetailsFrame extends JFrame {
 
-    private final Color clr_blue       = Theme.CLR_BLUE;
+    private final Color clr_blue       = new Color(0, 102, 153);
     private final Color clr_blue_hover = new Color(0, 122, 183);
     private final Color clr_white      = Color.WHITE;
-    private final Color clr_bg         = Theme.CLR_PANEL;
-    private final Color clr_cardBorder = Theme.CLR_BORDER;
+    private final Color clr_bg         = new Color(245, 247, 250);
+    private final Color clr_cardBorder = new Color(220, 225, 230);
     private final Color clr_textDark   = new Color(40, 40, 40);
     private final Color clr_label      = new Color(90, 90, 90);
 
@@ -88,7 +88,6 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_root.setBackground(clr_bg);
         jp_root.setBorder(new EmptyBorder(16, 18, 18, 18));
 
-        // Back button
         JPanel jp_topBar = new JPanel(new BorderLayout());
         jp_topBar.setBackground(clr_bg);
         jp_topBar.setBorder(new EmptyBorder(0, 0, 14, 0));
@@ -104,13 +103,11 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jb_back.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jp_topBar.add(jb_back, BorderLayout.WEST);
 
-        // ── BODY: two columns ────────────────────────────────────────────────
+        // ── BODY ─────────────────────────────────────────────────────────────
         JPanel jp_body = new JPanel(new BorderLayout(14, 0));
         jp_body.setBackground(clr_bg);
 
-        // ════════════════════════════════════════════════════════════════════
-        // LEFT PANEL — applicant list
-        // ════════════════════════════════════════════════════════════════════
+        // LEFT PANEL
         JPanel jp_left = new JPanel(new BorderLayout());
         jp_left.setBackground(clr_white);
         jp_left.setBorder(new LineBorder(clr_cardBorder, 1));
@@ -185,9 +182,7 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_left.add(jp_leftHead, BorderLayout.NORTH);
         jp_left.add(sp_list,     BorderLayout.CENTER);
 
-        // ════════════════════════════════════════════════════════════════════
-        // RIGHT PANEL — student detail view
-        // ════════════════════════════════════════════════════════════════════
+        // RIGHT PANEL
         JPanel jp_right = new JPanel(new BorderLayout());
         jp_right.setBackground(clr_white);
         jp_right.setBorder(new LineBorder(clr_cardBorder, 1));
@@ -200,7 +195,6 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jl_detailTitle.setForeground(clr_blue);
         jp_rightHead.add(jl_detailTitle, BorderLayout.CENTER);
 
-        // Info grid: 6 rows x 2 cols (label | value)
         JPanel jp_infoGrid = new JPanel(new GridLayout(6, 2, 0, 0));
         jp_infoGrid.setBackground(clr_white);
         jp_infoGrid.setBorder(new EmptyBorder(0, 14, 8, 14));
@@ -275,12 +269,11 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_infoGrid.add(jl_postLbl);
         jp_infoGrid.add(jl_val_posting);
 
-        // Text area sections: Skills / Modules & Grades / Notes
+        // Text area sections
         JPanel jp_textSections = new JPanel(new GridLayout(3, 1, 0, 10));
         jp_textSections.setBackground(clr_white);
         jp_textSections.setBorder(new EmptyBorder(8, 14, 14, 14));
 
-        // Skills
         JPanel jp_skillsSection = new JPanel(new BorderLayout());
         jp_skillsSection.setBackground(clr_white);
         jp_skillsSection.setBorder(new LineBorder(clr_cardBorder, 1));
@@ -304,7 +297,6 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_skillsSection.add(jl_skillsTitle, BorderLayout.NORTH);
         jp_skillsSection.add(sp_skills,      BorderLayout.CENTER);
 
-        // Modules & Grades
         JPanel jp_modulesSection = new JPanel(new BorderLayout());
         jp_modulesSection.setBackground(clr_white);
         jp_modulesSection.setBorder(new LineBorder(clr_cardBorder, 1));
@@ -328,7 +320,6 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_modulesSection.add(jl_modulesTitle, BorderLayout.NORTH);
         jp_modulesSection.add(sp_modules,      BorderLayout.CENTER);
 
-        // Notes
         JPanel jp_notesSection = new JPanel(new BorderLayout());
         jp_notesSection.setBackground(clr_white);
         jp_notesSection.setBorder(new LineBorder(clr_cardBorder, 1));
@@ -356,7 +347,6 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_textSections.add(jp_modulesSection);
         jp_textSections.add(jp_notesSection);
 
-        // Right body: info grid + text sections, scrollable
         JPanel jp_rightBody = new JPanel(new BorderLayout());
         jp_rightBody.setBackground(clr_white);
         jp_rightBody.add(jp_infoGrid,     BorderLayout.NORTH);
@@ -372,7 +362,7 @@ public class ViewAcademicDetailsFrame extends JFrame {
         jp_right.add(sp_right,     BorderLayout.CENTER);
 
         jp_left.setPreferredSize(new Dimension(420, 0));
-        jp_body.add(jp_left, BorderLayout.WEST);
+        jp_body.add(jp_left,  BorderLayout.WEST);
         jp_body.add(jp_right, BorderLayout.CENTER);
 
         jp_root.add(jp_topBar, BorderLayout.NORTH);
@@ -390,7 +380,8 @@ public class ViewAcademicDetailsFrame extends JFrame {
             "JOIN company c ON rp.companyId = c.companyId " +
             "WHERE c.companyId = ? ORDER BY s.studentId";
         int initCount = 0;
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlAll)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sqlAll)) {
             ps.setInt(1, Integer.parseInt(companyId));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -412,7 +403,7 @@ public class ViewAcademicDetailsFrame extends JFrame {
             tm_list.addRow(new Object[]{"No applicants found", "-", "-"});
         }
 
-        // ── ALL LISTENERS ────────────────────────────────────────────────────
+        // ── LISTENERS ────────────────────────────────────────────────────────
         jb_back.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 jb_back.setBackground(new Color(230, 235, 245));
@@ -440,8 +431,8 @@ public class ViewAcademicDetailsFrame extends JFrame {
                 if (row < 0) {
                     return;
                 }
-                String sid = String.valueOf(tm_list.getValueAt(row, 2));
-                if (sid == null || sid.trim().isEmpty() || sid.equals("-")) {
+                String studentId = String.valueOf(tm_list.getValueAt(row, 2));
+                if (studentId == null || studentId.trim().isEmpty() || studentId.equals("-")) {
                     jl_val_name.setText("-");
                     jl_val_program.setText("-");
                     jl_val_gpa.setText("-");
@@ -465,9 +456,10 @@ public class ViewAcademicDetailsFrame extends JFrame {
                     "WHERE c.companyId = ? AND s.studentId = ? " +
                     "GROUP BY s.studentId, s.fullName, s.course, ad.gpa, ad.cpa, ad.graduationYear, ad.skills, ad.modules, ad.notes " +
                     "LIMIT 1";
-                try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlS)) {
+                try (Connection con = DBConnection.getConnection();
+                     PreparedStatement ps = con.prepareStatement(sqlS)) {
                     ps.setInt(1, Integer.parseInt(companyId));
-                    ps.setInt(2, Integer.parseInt(sid.trim()));
+                    ps.setInt(2, Integer.parseInt(studentId.trim()));
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
                             jl_val_name.setText("-");
@@ -482,15 +474,15 @@ public class ViewAcademicDetailsFrame extends JFrame {
                             return;
                         }
                         String fn   = rs.getString("fullName");
-                        jl_val_name.setText(fn        != null && !fn.trim().isEmpty()   ? fn.trim()   : "-");
+                        jl_val_name.setText(fn != null && !fn.trim().isEmpty() ? fn.trim() : "-");
                         String cr   = rs.getString("course");
                         jl_val_program.setText(cr != null && !cr.trim().isEmpty() ? "<html>" + cr.trim() + "</html>" : "-");
                         String gpa  = rs.getString("gpa");
-                        jl_val_gpa.setText(gpa        != null && !gpa.trim().isEmpty()  ? gpa.trim()  : "-");
+                        jl_val_gpa.setText(gpa != null && !gpa.trim().isEmpty() ? gpa.trim() : "-");
                         String cpa  = rs.getString("cpa");
-                        jl_val_cpa.setText(cpa        != null && !cpa.trim().isEmpty()  ? cpa.trim()  : "-");
+                        jl_val_cpa.setText(cpa != null && !cpa.trim().isEmpty() ? cpa.trim() : "-");
                         String gy   = rs.getString("graduationYear");
-                        jl_val_gradYear.setText(gy    != null && !gy.trim().isEmpty()   ? gy.trim()   : "-");
+                        jl_val_gradYear.setText(gy != null && !gy.trim().isEmpty() ? gy.trim() : "-");
                         String post = rs.getString("postings");
                         jl_val_posting.setText(post != null && !post.trim().isEmpty() ? post.trim() : "-");
                         String rawSkills = rs.getString("skills");
@@ -506,7 +498,7 @@ public class ViewAcademicDetailsFrame extends JFrame {
                             jta_Modules.setText(mod.trim().replace(",", "\n"));
                         }
                         String notes = rs.getString("notes");
-                        jta_Notes.setText(notes   != null && !notes.trim().isEmpty() ? notes.trim() : "-");
+                        jta_Notes.setText(notes != null && !notes.trim().isEmpty() ? notes.trim() : "-");
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(
@@ -559,7 +551,8 @@ public class ViewAcademicDetailsFrame extends JFrame {
                   "ORDER BY s.studentId";
 
             int count = 0;
-            try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            try (Connection con = DBConnection.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setInt(1, Integer.parseInt(companyId));
                 if (!f.isEmpty()) {
                     ps.setString(2, "%" + f + "%");
@@ -581,8 +574,8 @@ public class ViewAcademicDetailsFrame extends JFrame {
                 JOptionPane.showMessageDialog(ViewAcademicDetailsFrame.this, "DB error while searching:\n" + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
             }
             if (count == 0) {
-            tm_list.addRow(new Object[]{"No applicants found", "-", "-"});
-        }
+                tm_list.addRow(new Object[]{"No applicants found", "-", "-"});
+            }
         }
     }
 }

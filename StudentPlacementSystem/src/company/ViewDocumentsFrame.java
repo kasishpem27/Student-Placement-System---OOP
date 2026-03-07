@@ -22,11 +22,11 @@ import java.sql.ResultSet;
 
 public class ViewDocumentsFrame extends JFrame {
 
-    private final Color clr_blue       = Theme.CLR_BLUE;
+    private final Color clr_blue       = new Color(0, 102, 153);
     private final Color clr_blue_hover = new Color(0, 122, 183);
     private final Color clr_white      = Color.WHITE;
-    private final Color clr_bg         = Theme.CLR_PANEL;
-    private final Color clr_cardBorder = Theme.CLR_BORDER;
+    private final Color clr_bg         = new Color(245, 247, 250);
+    private final Color clr_cardBorder = new Color(220, 225, 230);
     private final Color clr_textDark   = new Color(40, 40, 40);
     private final Color clr_bottomBackground = new Color(240, 244, 248);
 
@@ -122,7 +122,6 @@ public class ViewDocumentsFrame extends JFrame {
         jt_docs.setSelectionBackground(new Color(210, 230, 250));
         jt_docs.setSelectionForeground(clr_textDark);
 
-        // Hide internal columns
         for (int col : new int[]{3, 4, 5}) {
             jt_docs.getColumnModel().getColumn(col).setMinWidth(0);
             jt_docs.getColumnModel().getColumn(col).setMaxWidth(0);
@@ -188,7 +187,8 @@ public class ViewDocumentsFrame extends JFrame {
                 "ORDER BY s.studentId, sd.docType";
 
         int count = 0;
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(companyId));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -210,9 +210,7 @@ public class ViewDocumentsFrame extends JFrame {
             tm_docs.addRow(new Object[]{"-", "No documents found", "-", -1, "-", null});
         }
 
-        // ═══════════════════════════════════════════════
-        // ALL LISTENERS
-        // ═══════════════════════════════════════════════
+        // LISTENERS
         jb_back.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 jb_back.setBackground(new Color(230, 235, 245));
@@ -251,9 +249,9 @@ public class ViewDocumentsFrame extends JFrame {
                 return;
             }
 
-            String studentId  = String.valueOf(tm_docs.getValueAt(selectedRow, 0));
-            String documentName    = String.valueOf(tm_docs.getValueAt(selectedRow, 1));
-            String storedPath = (String) tm_docs.getValueAt(selectedRow, 5);
+            String studentId    = String.valueOf(tm_docs.getValueAt(selectedRow, 0));
+            String documentName = String.valueOf(tm_docs.getValueAt(selectedRow, 1));
+            String storedPath   = (String) tm_docs.getValueAt(selectedRow, 5);
 
             File sourceFile = null;
             if (storedPath != null && !storedPath.trim().isEmpty()) {

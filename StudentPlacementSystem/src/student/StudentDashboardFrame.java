@@ -81,9 +81,9 @@ public class StudentDashboardFrame extends JFrame {
         JPanel jp_headerLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         jp_headerLeft.setBackground(clr_blue);
         
-        
+ 
         ImageIcon rawLogoIcon = new ImageIcon("src/images/CareerConnect.png");
-        Image scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+        Image scaledLogoIcon = rawLogoIcon.getImage().getScaledInstance(38, 34, Image.SCALE_SMOOTH);
         jl_headerLogo = new JLabel(new ImageIcon(scaledLogoIcon));
         
         jl_headerLogo.setHorizontalAlignment(SwingConstants.LEFT);

@@ -19,11 +19,11 @@ import java.sql.ResultSet;
 public class CompanyDashboardFrame extends JFrame {
 
     // Theme colours
-    private final Color clr_blue         = Theme.CLR_BLUE;
+    private final Color clr_blue         = new Color(0, 102, 153);
     private final Color clr_blue_hover   = new Color(0, 122, 183);
     private final Color clr_white        = Color.WHITE;
-    private final Color clr_bg           = Theme.CLR_PANEL;
-    private final Color clr_cardBorder   = Theme.CLR_BORDER;
+    private final Color clr_bg           = new Color(245, 247, 250);
+    private final Color clr_cardBorder   = new Color(220, 225, 230);
     private final Color clr_textDark     = new Color(40, 40, 40);
 
     private final Color clr_logout_btn = new Color(0, 140, 205);
@@ -61,26 +61,19 @@ public class CompanyDashboardFrame extends JFrame {
     private JPanel jp_viewDocumentsActionCard;
     private JPanel jp_academicDetailsActionCard;
 
-    // FIX 1: companyId is now a plain int (not final String) so it can be
-    //         assigned after the DB fetch inside the constructor.
-    //         companyUserId holds the userId passed in from LoginFrame.
     private int companyUserId;
-    private int companyId;                 // PK from company table
+    private int companyId;
     private String companyName = "Company";
     private int totalPostings, activePostings, totalApplicants, acceptedOffers;
 
     private LoginFrame login;
 
-    // FIX 2: Constructor now takes (LoginFrame, int companyUserId) only.
-    //         companyName and companyId are both resolved from userId via DB.
     public CompanyDashboardFrame(LoginFrame login, int companyUserId) {
         super("CareerConnect - Company Dashboard");
 
         this.login         = login;
         this.companyUserId = companyUserId;
 
-        // FIX 3: Single query fetches both companyId (PK) and companyName
-        //         using userId, which is the value we actually have at login.
         fetchCompanyInfo(companyUserId);
 
         setLayout(new BorderLayout());
@@ -88,7 +81,6 @@ public class CompanyDashboardFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
 
-        // Load initial stats — FIX 4: use int companyId directly, no parseInt needed
         loadStats();
 
         // ── Header Panel ──────────────────────────────────────────────────────
@@ -102,7 +94,7 @@ public class CompanyDashboardFrame extends JFrame {
         URL logoUrl = getClass().getResource("/images/CareerConnect.png");
         jl_headerLogo = new JLabel();
         if (logoUrl != null) {
-            Image scaled = new ImageIcon(logoUrl).getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+            Image scaled = new ImageIcon(logoUrl).getImage().getScaledInstance(38, 34, Image.SCALE_SMOOTH);
             jl_headerLogo = new JLabel(new ImageIcon(scaled));
         }
         jl_headerLogo.setHorizontalAlignment(SwingConstants.LEFT);
@@ -133,7 +125,6 @@ public class CompanyDashboardFrame extends JFrame {
             jl_profileIcon = new JLabel(new ImageIcon(scaled));
         }
 
-        // FIX 5: companyId is now a plain int — no need for this.companyId string tricks
         JLabel jl_userInfo = new JLabel(this.companyName + "  ·  COM" + this.companyId);
         jl_userInfo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jl_userInfo.setForeground(clr_white);
@@ -407,7 +398,7 @@ public class CompanyDashboardFrame extends JFrame {
                         JOptionPane.QUESTION_MESSAGE
                 );
                 if (result == JOptionPane.OK_OPTION) {
-                    new LoginFrame().setVisible(true);
+                    login.setVisible(true);
                     dispose();
                 }
             }
@@ -417,7 +408,6 @@ public class CompanyDashboardFrame extends JFrame {
             public void mouseEntered(MouseEvent e) { jp_createOpportunityActionCard.setBorder(new LineBorder(clr_blue, 2)); }
             public void mouseExited(MouseEvent e)  { jp_createOpportunityActionCard.setBorder(new LineBorder(clr_cardBorder, 1)); }
             public void mouseClicked(MouseEvent e) {
-                // FIX 6: pass int companyId directly — no more String conversion issues
                 new CreateOpportunityFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this).setVisible(true);
                 setVisible(false);
             }
@@ -453,13 +443,11 @@ public class CompanyDashboardFrame extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    // ── Called after child frames return ──────────────────────────────────────
     public void returnToDashboard() {
         refreshStats();
         setVisible(true);
     }
 
-    // ── Refresh stat labels from DB ───────────────────────────────────────────
     public void refreshStats() {
         loadStats();
         jl_totalPostingsValue.setText(Integer.toString(totalPostings));
@@ -468,36 +456,42 @@ public class CompanyDashboardFrame extends JFrame {
         jl_acceptedValue.setText(Integer.toString(acceptedOffers));
     }
 
-    // ── FIX 7: Extracted shared stats-loading logic into one private method ───
-    //           Uses int companyId directly — no parseInt, no null-check dance.
     private void loadStats() {
         try (Connection con = DBConnection.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement(
                     "SELECT COUNT(*) FROM recruitmentPosting WHERE companyId = ?")) {
                 ps.setInt(1, companyId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) totalPostings = rs.getInt(1);
+                    if (rs.next()) {
+                        totalPostings = rs.getInt(1);
+                    }
                 }
             }
             try (PreparedStatement ps = con.prepareStatement(
                     "SELECT COUNT(*) FROM recruitmentPosting WHERE companyId = ? AND applicationDeadline >= CURDATE() AND isActive = 1")) {
                 ps.setInt(1, companyId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) activePostings = rs.getInt(1);
+                    if (rs.next()) {
+                        activePostings = rs.getInt(1);
+                    }
                 }
             }
             try (PreparedStatement ps = con.prepareStatement(
                     "SELECT COUNT(*) FROM application a JOIN recruitmentPosting rp ON a.postingId = rp.postingId WHERE rp.companyId = ?")) {
                 ps.setInt(1, companyId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) totalApplicants = rs.getInt(1);
+                    if (rs.next()) {
+                        totalApplicants = rs.getInt(1);
+                    }
                 }
             }
             try (PreparedStatement ps = con.prepareStatement(
                     "SELECT COUNT(*) FROM application a JOIN recruitmentPosting rp ON a.postingId = rp.postingId WHERE rp.companyId = ? AND LOWER(a.status) = 'accepted'")) {
                 ps.setInt(1, companyId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) acceptedOffers = rs.getInt(1);
+                    if (rs.next()) {
+                        acceptedOffers = rs.getInt(1);
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -510,8 +504,6 @@ public class CompanyDashboardFrame extends JFrame {
         }
     }
 
-    // ── FIX 8: Single query fetches companyId (PK) AND companyName by userId ──
-    //           Column is "userId" in the company table, not "companyUserId".
     private void fetchCompanyInfo(int userId) {
         String sql = "SELECT companyId, companyName FROM company WHERE userId = ?";
         try (Connection con = DBConnection.getConnection();

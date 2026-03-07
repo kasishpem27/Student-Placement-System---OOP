@@ -18,10 +18,10 @@ import java.sql.ResultSet;
 
 public class ViewApplicantsFrame extends JFrame {
 
-    private final Color clr_blue       = Theme.CLR_BLUE;
+    private final Color clr_blue       = new Color(0, 102, 153);
     private final Color clr_white      = Color.WHITE;
-    private final Color clr_bg         = Theme.CLR_PANEL;
-    private final Color clr_cardBorder = Theme.CLR_BORDER;
+    private final Color clr_bg         = new Color(245, 247, 250);
+    private final Color clr_cardBorder = new Color(220, 225, 230);
     private final Color clr_textDark   = new Color(40, 40, 40);
 
     private final String companyName;
@@ -148,13 +148,16 @@ public class ViewApplicantsFrame extends JFrame {
                 "WHERE c.companyId = ? ORDER BY rp.postingId, a.appliedOn DESC";
 
         int count = 0;
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(companyId));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     tm_applicants.addRow(new Object[]{
                             rs.getString("posting"),
-                            rs.getString("name"), rs.getString("course"), rs.getString("status")
+                            rs.getString("name"),
+                            rs.getString("course"),
+                            rs.getString("status")
                     });
                     count++;
                 }
