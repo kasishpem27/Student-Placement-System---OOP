@@ -44,7 +44,7 @@ public class ViewAcademicDetailsFrame extends JFrame {
         this.companyId   = companyId == null ? "1" : companyId.replaceAll("[^0-9]", "");
         this.dashboard   = dashboard;
 
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -489,13 +489,13 @@ public class ViewAcademicDetailsFrame extends JFrame {
                         if (rawSkills == null || rawSkills.trim().isEmpty()) {
                             jta_Skills.setText("-");
                         } else {
-                            jta_Skills.setText(rawSkills.trim().replace(",", "\n"));
+                            jta_Skills.setText(rawSkills.trim().replaceAll(",\\s*", "\n"));
                         }
                         String mod = rs.getString("modules");
                         if (mod == null || mod.trim().isEmpty()) {
                             jta_Modules.setText("-");
                         } else {
-                            jta_Modules.setText(mod.trim().replace(",", "\n"));
+                            jta_Modules.setText(mod.trim().replaceAll(",\\s*", "\n"));
                         }
                         String notes = rs.getString("notes");
                         jta_Notes.setText(notes != null && !notes.trim().isEmpty() ? notes.trim() : "-");
@@ -515,8 +515,9 @@ public class ViewAcademicDetailsFrame extends JFrame {
     // ── BACK LISTENER ────────────────────────────────────────────────────────
     private class BackHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            dashboard.refreshStats();
+            dashboard.setVisible(true);
             dispose();
-            dashboard.returnToDashboard();
         }
     }
 

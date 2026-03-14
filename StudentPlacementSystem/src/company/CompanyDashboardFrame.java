@@ -408,7 +408,8 @@ public class CompanyDashboardFrame extends JFrame {
             public void mouseEntered(MouseEvent e) { jp_createOpportunityActionCard.setBorder(new LineBorder(clr_blue, 2)); }
             public void mouseExited(MouseEvent e)  { jp_createOpportunityActionCard.setBorder(new LineBorder(clr_cardBorder, 1)); }
             public void mouseClicked(MouseEvent e) {
-                new CreateOpportunityFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this).setVisible(true);
+                CreateOpportunityFrame frame = new CreateOpportunityFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this);
+                frame.setVisible(true);
                 setVisible(false);
             }
         });
@@ -417,7 +418,8 @@ public class CompanyDashboardFrame extends JFrame {
             public void mouseEntered(MouseEvent e) { jp_viewApplicantsActionCard.setBorder(new LineBorder(clr_blue, 2)); }
             public void mouseExited(MouseEvent e)  { jp_viewApplicantsActionCard.setBorder(new LineBorder(clr_cardBorder, 1)); }
             public void mouseClicked(MouseEvent e) {
-                new ViewApplicantsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this).setVisible(true);
+                ViewApplicantsFrame frame = new ViewApplicantsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this);
+                frame.setVisible(true);
                 setVisible(false);
             }
         });
@@ -426,7 +428,8 @@ public class CompanyDashboardFrame extends JFrame {
             public void mouseEntered(MouseEvent e) { jp_viewDocumentsActionCard.setBorder(new LineBorder(clr_blue, 2)); }
             public void mouseExited(MouseEvent e)  { jp_viewDocumentsActionCard.setBorder(new LineBorder(clr_cardBorder, 1)); }
             public void mouseClicked(MouseEvent e) {
-                new ViewDocumentsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this).setVisible(true);
+                ViewDocumentsFrame frame = new ViewDocumentsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this);
+                frame.setVisible(true);
                 setVisible(false);
             }
         });
@@ -435,17 +438,13 @@ public class CompanyDashboardFrame extends JFrame {
             public void mouseEntered(MouseEvent e) { jp_academicDetailsActionCard.setBorder(new LineBorder(clr_blue, 2)); }
             public void mouseExited(MouseEvent e)  { jp_academicDetailsActionCard.setBorder(new LineBorder(clr_cardBorder, 1)); }
             public void mouseClicked(MouseEvent e) {
-                new ViewAcademicDetailsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this).setVisible(true);
+                ViewAcademicDetailsFrame frame = new ViewAcademicDetailsFrame(CompanyDashboardFrame.this.companyName, String.valueOf(CompanyDashboardFrame.this.companyId), CompanyDashboardFrame.this);
+                frame.setVisible(true);
                 setVisible(false);
             }
         });
 
         setLocationRelativeTo(null);
-    }
-
-    public void returnToDashboard() {
-        refreshStats();
-        setVisible(true);
     }
 
     public void refreshStats() {

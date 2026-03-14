@@ -49,17 +49,18 @@ public class CompanyRegisterFrame extends JFrame {
     private final String ph_website     = "Enter your company website";
     private final String ph_brn         = "Enter your BRN";
     private final String ph_desc        = "Enter company description";
+
     private LoginFrame login;
 
     public CompanyRegisterFrame(LoginFrame login) {
-    	
         super("CareerConnect - Company Registration");
+        this.login = login;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(clr_white);
-        this.login = login;
+
         // ── MAIN CONTAINER ──
         JPanel jp_main = new JPanel(new GridLayout(1, 2, 0, 0));
         jp_main.setBackground(clr_white);
@@ -591,10 +592,7 @@ public class CompanyRegisterFrame extends JFrame {
                     return;
                 }
 
-                boolean registered = registerCompany(name, address, contact, industry, email, website, brn, desc, pass1);
-                if (registered) {
-                    dispose();
-                }
+                registerCompany(name, address, contact, industry, email, website, brn, desc, pass1);
             }
         });
     }
@@ -662,7 +660,8 @@ public class CompanyRegisterFrame extends JFrame {
                 JOptionPane.showMessageDialog(CompanyRegisterFrame.this,
                         "Company registered successfully!\nCompany ID: COM" + companyId,
                         "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
-                new CompanyDashboardFrame(null, userId).setVisible(true);
+                login.setVisible(true);
+                dispose();
                 return true;
 
             } catch (Exception ex) {

@@ -59,7 +59,7 @@ public class CreateOpportunityFrame extends JFrame {
         this.companyId   = companyId == null ? "1" : companyId.replaceAll("[^0-9]", "");
         this.dashboard   = dashboard;
 
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 750));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -636,8 +636,9 @@ public class CreateOpportunityFrame extends JFrame {
     // BACK LISTENER
     private class BackHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            dashboard.refreshStats();
+            dashboard.setVisible(true);
             dispose();
-            dashboard.returnToDashboard();
         }
     }
 
